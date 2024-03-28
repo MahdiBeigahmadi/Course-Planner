@@ -10,6 +10,7 @@ package com.example.demo.models;
  * Student ID(s): 301570853,
  * Last modified: April. 2024
  */
+
 public class Course {
     private int SEMESTER;
     private String SUBJECT;
@@ -24,6 +25,20 @@ public class Course {
     private String COMPONENTCODE;
 
     public Course() {
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "SEMESTER=" + SEMESTER +
+                ", SUBJECT='" + SUBJECT + '\'' +
+                ", CATALOGNUMBER='" + CATALOGNUMBER + '\'' +
+                ", LOCATION='" + LOCATION + '\'' +
+                ", ENROLEMENTCAPACITY=" + ENROLEMENTCAPACITY +
+                ", ENROLMENTTOTAL=" + ENROLMENTTOTAL +
+                ", INSTRUCTORS='" + INSTRUCTORS + '\'' +
+                ", COMPONENTCODE='" + COMPONENTCODE + '\'' +
+                '}';
     }
 
     public Course(int SEMESTER, String SUBJECT, String CATALOGNUMBER,

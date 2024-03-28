@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Courses</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h2>Courses</h2>
+<table>
+    <thead>
+    <tr>
+        <th>SEMESTER</th>
+        <th>SUBJECT</th>
+        <th>CATALOGNUMBER</th>
+        <th>LOCATION</th>
+        <th>ENROLEMENTCAPACITY</th>
+        <th>ENROLMENTTOTAL</th>
+        <th>INSTRUCTORS</th>
+        <th>COMPONENTCODE</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="course : ${courses}">
+        <td th:text="${course.SEMESTER}"></td>
+        <td th:text="${course.SUBJECT}"></td>
+        <td th:text="${course.CATALOGNUMBER}"></td>
+        <td th:text="${course.LOCATION}"></td>
+        <td th:text="${course.ENROLEMENTCAPACITY}"></td>
+        <td th:text="${course.ENROLMENTTOTAL}"></td>
+        <td th:text="${course.INSTRUCTORS}"></td>
+        <td th:text="${course.COMPONENTCODE}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
