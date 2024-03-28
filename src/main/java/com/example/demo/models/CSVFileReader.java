@@ -16,11 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CSVFileReader {
-    private List<Course> courseContainer = new ArrayList<>();
+    private final List<Course> courseContainer = new ArrayList<>();
+
+    public CSVFileReader() {
+    }
+
     public List<Course> getCourseContainer() {
         return courseContainer;
     }
-    public CSVFileReader() {}
 
     public void extractDataFromCSVFile() {
         String filePath = "data/course_data_2018.csv";
@@ -29,7 +32,7 @@ public class CSVFileReader {
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             while ((line = br.readLine()) != null) {
-                if(line.trim().isEmpty()) continue;
+                if (line.trim().isEmpty()) continue;
 
                 String[] course = line.split(splitBy, -1);
 
