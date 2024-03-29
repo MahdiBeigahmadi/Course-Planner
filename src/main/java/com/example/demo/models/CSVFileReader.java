@@ -1,4 +1,5 @@
 package com.example.demo.models;
+
 /* CSVFileReader class
  * CSVFileReader.java
  *
@@ -14,12 +15,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CSVFileReader {
     private final List<Course> courseContainer = new ArrayList<>();
 
-    public CSVFileReader() {
-    }
+    public String subject;
+    public String catalogNumber;
+    public CSVFileReader() {}
 
     public List<Course> getCourseContainer() {
         return courseContainer;
@@ -31,6 +34,7 @@ public class CSVFileReader {
         String splitBy = ",";
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine();
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
 
@@ -45,7 +49,6 @@ public class CSVFileReader {
                     System.err.println("Number format exception for line: " + line);
                     continue;
                 }
-
                 Course newCourse = new Course(semester, course[1], course[2],
                         course[3], enrollmentCapacity, totalEnrollment, course[6], course[7]);
                 courseContainer.add(newCourse);
@@ -53,5 +56,23 @@ public class CSVFileReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void extractDataFromCSVFileAndFilter(String subject, String catalogNumber) {
+        this.subject = subject;
+        this.catalogNumber = catalogNumber;
+        extractDataFromCSVFile();
+        List<Course> filteredCourses = findBySubjectAndCatalogNumber();
+        courseContainer.clear();
+        courseContainer.addAll(filteredCourses);
+    }
+
+    public List<Course> findBySubjectAndCatalogNumber() {
+        List<Course> filteredList = new ArrayList<>();
+        for (Course course : courseContainer) {
+            if (course.getSUBJECT().trim().equals(subject) && Objects.equals(course.getCATALOGNUMBER().trim(), catalogNumber)) {
+                filteredList.add(course);
+            }
+        }
+        return filteredList;
     }
 }

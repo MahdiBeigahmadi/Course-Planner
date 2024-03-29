@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>List Of Course Offerings</title>
+</head>
+<body>
+<h2>Course Offerings</h2>
+<div th:each="course : ${courses}">
+    <div th:each="catalog : ${catalogs}">
+        <div th:each="subjectChosen : ${subjectChosens}">
+    <p>
+        <strong th:text="${subjectChosen} + ${catalog}"></strong>
+        <strong th:text="${course.SEMESTER}"></strong>
+        <span th:text="' in ' + ${course.LOCATION} + ' by ' + ${course.INSTRUCTORS}"></span>
+    </p>
+    <ul>
+        <li th:text="'Type: ' + ${course.COMPONENTCODE} + ', Enrollment=' + ${course.ENROLMENTTOTAL} + '/' + ${course.ENROLEMENTCAPACITY}"></li>
+    </ul>
+</div>
+</body>
+</html>

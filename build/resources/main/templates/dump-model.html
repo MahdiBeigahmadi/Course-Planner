@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>List of Courses</title>
@@ -8,16 +8,31 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+
         th, td {
             padding: 10px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
+<section>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="form-container">
+            <h2 class="form-title"> Course Search Form</h2>
+            <form action="/api/dump-model" method="post">
+                <label for="SUBJECT">Subject <br></label><input type="text" class="form-control" id="SUBJECT" name="SUBJECT" placeholder=""><br><br>
+                <label for="CATALOGNUMBER">Catalog Number<br> </label><input type="text" class="form-control" id="CATALOGNUMBER" name="CATALOGNUMBER" placeholder=""><br>
+                <br>
+                <button type="submit" class="btn btn-custom">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
 <h2>Courses</h2>
 <table>
     <thead>
