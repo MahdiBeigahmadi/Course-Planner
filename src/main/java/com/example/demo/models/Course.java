@@ -40,20 +40,6 @@ public class Course {
         this.componentCode = componentCode;
     }
 
-    @Override
-    public String toString() {
-        return "Course{" +
-                "SEMESTER=" + semester +
-                ", SUBJECT='" + subject + '\'' +
-                ", CATALOGNUMBER='" + catalogNumber + '\'' +
-                ", LOCATION='" + location + '\'' +
-                ", ENROLEMENTCAPACITY=" + enrolementCapacity +
-                ", ENROLMENTTOTAL=" + enrolmentTotal +
-                ", INSTRUCTORS='" + instructors + '\'' +
-                ", COMPONENTCODE='" + componentCode + '\'' +
-                '}';
-    }
-
     public int getSemester() {
         return semester;
     }
@@ -70,11 +56,25 @@ public class Course {
         this.subject = subject;
     }
 
-    public String getCATALOGNUMBER() {
+    public String getCatalogNumber() {
         return catalogNumber;
     }
 
-    public void setCATALOGNUMBER(String catalogNumber) {
+    @Override
+    public String toString() {
+        return "Course{" +
+                "semester=" + semester +
+                ", subject='" + subject + '\'' +
+                ", catalogNumber='" + catalogNumber + '\'' +
+                ", location='" + location + '\'' +
+                ", enrolementCapacity=" + enrolementCapacity +
+                ", enrolmentTotal=" + enrolmentTotal +
+                ", instructors='" + instructors + '\'' +
+                ", componentCode='" + componentCode + '\'' +
+                '}';
+    }
+
+    public void setCatalogNumber(String catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
 
