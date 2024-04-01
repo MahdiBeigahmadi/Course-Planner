@@ -12,109 +12,109 @@ package com.example.demo.models;
  */
 
 public class Course {
-    private int SEMESTER;
-    private String SUBJECT;
-    private String CATALOGNUMBER;
-    private String LOCATION;
-    private int ENROLEMENTCAPACITY;
+    private int semester;
+    private String subject;
+    private String catalogNumber;
+    private String location;
+    private int enrolementCapacity;
 
-    private int ENROLMENTTOTAL;
+    private int enrolmentTotal;
 
-    private String INSTRUCTORS;
+    private String instructors;
 
-    private String COMPONENTCODE;
+    private String componentCode;
 
     public Course() {
+    }
+
+    public Course(int semester, String SUBJECT, String catalogNumber,
+                  String location, int enrolementCapacity, int enrolmentTotal,
+                  String instructors, String componentCode) {
+        this.semester = semester;
+        this.subject = SUBJECT;
+        this.catalogNumber = catalogNumber;
+        this.location = location;
+        this.enrolementCapacity = enrolementCapacity;
+        this.enrolmentTotal = enrolmentTotal;
+        this.instructors = instructors;
+        this.componentCode = componentCode;
     }
 
     @Override
     public String toString() {
         return "Course{" +
-                "SEMESTER=" + SEMESTER +
-                ", SUBJECT='" + SUBJECT + '\'' +
-                ", CATALOGNUMBER='" + CATALOGNUMBER + '\'' +
-                ", LOCATION='" + LOCATION + '\'' +
-                ", ENROLEMENTCAPACITY=" + ENROLEMENTCAPACITY +
-                ", ENROLMENTTOTAL=" + ENROLMENTTOTAL +
-                ", INSTRUCTORS='" + INSTRUCTORS + '\'' +
-                ", COMPONENTCODE='" + COMPONENTCODE + '\'' +
+                "SEMESTER=" + semester +
+                ", SUBJECT='" + subject + '\'' +
+                ", CATALOGNUMBER='" + catalogNumber + '\'' +
+                ", LOCATION='" + location + '\'' +
+                ", ENROLEMENTCAPACITY=" + enrolementCapacity +
+                ", ENROLMENTTOTAL=" + enrolmentTotal +
+                ", INSTRUCTORS='" + instructors + '\'' +
+                ", COMPONENTCODE='" + componentCode + '\'' +
                 '}';
     }
 
-    public Course(int SEMESTER, String SUBJECT, String CATALOGNUMBER,
-                  String LOCATION, int ENROLEMENTCAPACITY, int ENROLMENTTOTAL,
-                  String INSTRUCTORS, String COMPONENTCODE) {
-        this.SEMESTER = SEMESTER;
-        this.SUBJECT = SUBJECT;
-        this.CATALOGNUMBER = CATALOGNUMBER;
-        this.LOCATION = LOCATION;
-        this.ENROLEMENTCAPACITY = ENROLEMENTCAPACITY;
-        this.ENROLMENTTOTAL = ENROLMENTTOTAL;
-        this.INSTRUCTORS = INSTRUCTORS;
-        this.COMPONENTCODE = COMPONENTCODE;
+    public int getSemester() {
+        return semester;
     }
 
-    public int getSEMESTER() {
-        return SEMESTER;
+    public void setSemester(int semester) {
+        this.semester = semester;
     }
 
-    public void setSEMESTER(int SEMESTER) {
-        this.SEMESTER = SEMESTER;
+    public String getSubject() {
+        return subject;
     }
 
-    public String getSUBJECT() {
-        return SUBJECT;
-    }
-
-    public void setSUBJECT(String SUBJECT) {
-        this.SUBJECT = SUBJECT;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getCATALOGNUMBER() {
-        return CATALOGNUMBER;
+        return catalogNumber;
     }
 
-    public void setCATALOGNUMBER(String CATALOGNUMBER) {
-        this.CATALOGNUMBER = CATALOGNUMBER;
+    public void setCATALOGNUMBER(String catalogNumber) {
+        this.catalogNumber = catalogNumber;
     }
 
-    public String getLOCATION() {
-        return LOCATION;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLOCATION(String LOCATION) {
-        this.LOCATION = LOCATION;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public int getENROLEMENTCAPACITY() {
-        return ENROLEMENTCAPACITY;
+    public int getEnrolementCapacity() {
+        return enrolementCapacity;
     }
 
-    public void setENROLEMENTCAPACITY(int ENROLEMENTCAPACITY) {
-        this.ENROLEMENTCAPACITY = ENROLEMENTCAPACITY;
+    public void setEnrolementCapacity(int enrolementCapacity) {
+        this.enrolementCapacity = enrolementCapacity;
     }
 
-    public int getENROLMENTTOTAL() {
-        return ENROLMENTTOTAL;
+    public int getEnrolmentTotal() {
+        return enrolmentTotal;
     }
 
-    public void setENROLMENTTOTAL(int ENROLMENTTOTAL) {
-        this.ENROLMENTTOTAL = ENROLMENTTOTAL;
+    public void setEnrolmentTotal(int enrolmentTotal) {
+        this.enrolmentTotal = enrolmentTotal;
     }
 
-    public String getINSTRUCTORS() {
-        return INSTRUCTORS;
+    public String getInstructors() {
+        return instructors;
     }
 
-    public void setINSTRUCTORS(String INSTRUCTORS) {
-        this.INSTRUCTORS = INSTRUCTORS;
+    public void setInstructors(String instructors) {
+        this.instructors = instructors;
     }
 
-    public String getCOMPONENTCODE() {
-        return COMPONENTCODE;
+    public String getComponentCode() {
+        return componentCode;
     }
 
-    public void setCOMPONENTCODE(String COMPONENTCODE) {
-        this.COMPONENTCODE = COMPONENTCODE;
+    public void setComponentCode(String componentCode) {
+        this.componentCode = componentCode;
     }
 }

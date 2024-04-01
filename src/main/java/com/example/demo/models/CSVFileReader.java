@@ -29,7 +29,7 @@ public class CSVFileReader {
     }
 
     public void extractDataFromCSVFile() {
-        String filePath = "data/course_data_2018.csv";
+        String filePath = "docs/course_data_2018.csv";
         String line = "";
         String splitBy = ",";
 
@@ -69,7 +69,7 @@ public class CSVFileReader {
     public List<Course> findBySubjectAndCatalogNumber() {
         List<Course> filteredList = new ArrayList<>();
         for (Course course : courseContainer) {
-            if (course.getSUBJECT().trim().equals(subject) && Objects.equals(course.getCATALOGNUMBER().trim(), catalogNumber)) {
+            if (course.getSubject().trim().equals(subject) && Objects.equals(course.getCATALOGNUMBER().trim(), catalogNumber)) {
                 filteredList.add(course);
             }
         }
