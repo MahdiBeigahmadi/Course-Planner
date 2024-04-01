@@ -20,6 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.session:spring-session-core'
     implementation 'com.opencsv:opencsv:5.0'
     implementation 'org.apache.commons:commons-csv:1.8'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

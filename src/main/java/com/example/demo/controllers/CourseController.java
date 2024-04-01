@@ -11,40 +11,46 @@ package com.example.demo.controllers;
  * Last modified: April. 2024
  */
 
-import com.example.demo.models.CSVFileReader;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.example.demo.models.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.List;
+
+@RestController
 public class CourseController {
-    @GetMapping("/api/dump-model")
-    public String getCourseInformation(Model model) {
-        CSVFileReader data = new CSVFileReader();
-        data.extractDataFromCSVFile();
-        model.addAttribute("courses", data.getCourseContainer());
-        return "dump-model";
+    private final DepartmentService departmentService;
+
+    @Autowired
+    public CourseController(DepartmentService departmentService) {
+        this.departmentService = departmentService;
     }
 
-    @PostMapping("/api/dump-model")
-    public String getSearchResultsFromCSVFile(@RequestParam("SUBJECT") String subjectName,
-                                              @RequestParam("CATALOGNUMBER") String catalogNumber,
-                                              HttpServletResponse response, Model model) {
-        CSVFileReader data = new CSVFileReader();
-        data.extractDataFromCSVFileAndFilter(subjectName.toUpperCase(), catalogNumber);
+    @GetMapping("/api/about")
+    public ApiAboutDTO getInformationAboutAuthors() {
+        return new ApiAboutDTO("Course Planner", "Mahdi & Danieva");
+    }
 
-        if (data.getCourseContainer().isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "notFound";
-        } else {
-            model.addAttribute("subjectChosens", subjectName);
-            model.addAttribute("catalogs", catalogNumber);
-            model.addAttribute("courses", data.getCourseContainer());
-            response.setStatus(HttpServletResponse.SC_OK);
-            return "informationOnSelectedSubject";
-        }
+    @GetMapping("/api/dump-model")
+    public List<Course> loadCSVFileOnServer() {
+        CSVFileReader data = new CSVFileReader();
+        data.extractDataFromCSVFile();
+        return data.getCourseContainer();
+    }
+
+    @GetMapping("/api/departments")
+    public ResponseEntity<List<ApiDepartmentDTO>> getDepartments() {
+        List<ApiDepartmentDTO> departments = departmentService.extractDepartmentsFromCSVFile();
+        return ResponseEntity.ok(departments);
+    }
+
+    @GetMapping("/api/departments/{DEPT}/courses")
+    public List<String> getAllCoursesBasedOnSelectedDepartment(@PathVariable("DEPT") long dept) {
+        ApiCourseDTO course = new ApiCourseDTO();
+        course.setCourseId(dept);
+        return course.findCourseBasedOnDepartment();
     }
 }
