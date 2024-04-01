@@ -15,13 +15,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CSVFileReader {
     private final List<Course> courseContainer = new ArrayList<>();
-
-    public String subject;
-    public String catalogNumber;
     public CSVFileReader() {}
 
     public List<Course> getCourseContainer() {
@@ -56,23 +52,5 @@ public class CSVFileReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    public void extractDataFromCSVFileAndFilter(String subject, String catalogNumber) {
-        this.subject = subject;
-        this.catalogNumber = catalogNumber;
-        extractDataFromCSVFile();
-        List<Course> filteredCourses = findBySubjectAndCatalogNumber();
-        courseContainer.clear();
-        courseContainer.addAll(filteredCourses);
-    }
-
-    public List<Course> findBySubjectAndCatalogNumber() {
-        List<Course> filteredList = new ArrayList<>();
-        for (Course course : courseContainer) {
-            if (course.getSubject().trim().equals(subject) && Objects.equals(course.getCATALOGNUMBER().trim(), catalogNumber)) {
-                filteredList.add(course);
-            }
-        }
-        return filteredList;
     }
 }

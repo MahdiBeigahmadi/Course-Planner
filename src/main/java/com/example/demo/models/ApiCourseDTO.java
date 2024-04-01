@@ -35,7 +35,7 @@ public class ApiCourseDTO {
         file.extractDataFromCSVFile();
         for (int i = 0; i< file.getCourseContainer().size(); i++) {
             if(file.getCourseContainer().get(i).getSubject().equals(getCourseName())) {
-                catalogNumber.add(file.getCourseContainer().get(i).getCATALOGNUMBER().trim());
+                catalogNumber.add(file.getCourseContainer().get(i).getCatalogNumber().trim());
             }
         }
         Collections.sort(catalogNumber);

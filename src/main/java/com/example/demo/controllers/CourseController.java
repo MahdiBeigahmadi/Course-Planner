@@ -47,10 +47,20 @@ public class CourseController {
         return ResponseEntity.ok(departments);
     }
 
-    @GetMapping("/api/departments/{DEPT}/courses")
-    public List<String> getAllCoursesBasedOnSelectedDepartment(@PathVariable("DEPT") long dept) {
+    @GetMapping("/api/departments/{id}/courses")
+    public List<String> getAllCoursesBasedOnSelectedDepartment(@PathVariable("id") long dept) {
         ApiCourseDTO course = new ApiCourseDTO();
         course.setCourseId(dept);
         return course.findCourseBasedOnDepartment();
+    }
+
+    @GetMapping("/api/departments/{departmentID}/courses/{courseID}/offerings")
+    public List<ApiCourseOfferingDTO> showAllOfferingsBasedOnSelectedDepartments(@PathVariable("departmentID") long departmentId,
+                                                                                 @PathVariable("courseID") long courseId) {
+
+        ApiCourseOfferingDTO offer = new ApiCourseOfferingDTO();
+        offer.setCourseOfferingId(courseId);
+        offer.setDepartmentId(departmentId);
+        return offer.extractInformationBasedOnCourseIdAndDepartmentId();
     }
 }
