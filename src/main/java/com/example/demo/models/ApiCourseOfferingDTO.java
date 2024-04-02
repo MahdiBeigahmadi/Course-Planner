@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class ApiCourseOfferingDTO {
+    public List<ApiCourseOfferingDTO> getFilteredCourses() {
+        return filteredCourses;
+    }
+
     private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
     private long departmentId;
     private long courseOfferingId;
@@ -28,10 +32,7 @@ public class ApiCourseOfferingDTO {
     public ApiCourseOfferingDTO() {
     }
 
-    public ApiCourseOfferingDTO(long departmentId, long courseOfferingId, String location,
-                                String instructors, String term, long semesterCode, int year) {
-        this.departmentId = departmentId;
-        this.courseOfferingId = courseOfferingId;
+    public ApiCourseOfferingDTO(long semesterCode, String term, int year, String instructors, String location) {
         this.location = location;
         this.instructors = instructors;
         this.term = term;
@@ -95,7 +96,7 @@ public class ApiCourseOfferingDTO {
         this.year = year;
     }
 
-    public List<ApiCourseOfferingDTO> extractInformationBasedOnCourseIdAndDepartmentId() {
+    public void extractInformationBasedOnCourseIdAndDepartmentId() {
         CSVFileReader file = new CSVFileReader();
         file.extractDataFromCSVFile();
         List<Course> tempCourses = new ArrayList<>(file.getCourseContainer());
@@ -105,13 +106,14 @@ public class ApiCourseOfferingDTO {
                     Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
                 System.out.println("Match found: " + temp);
                 SemesterData semesterData = getDataForSemesterCode(temp.getSemester());
-                filteredCourses.add(new ApiCourseOfferingDTO(getDepartmentId(),
-                        getCourseOfferingId(),
-                        temp.getLocation(),
-                        temp.getInstructors(),
-                        semesterData.term,
+                filteredCourses.add(new ApiCourseOfferingDTO(
                         temp.getSemester(),
-                        semesterData.year));
+                        semesterData.term,
+                        semesterData.year,
+                        temp.getInstructors(),
+                        temp.getLocation()
+
+                ));
             } else {
                 System.out.println("No match for Course: " + temp);
             }
@@ -120,7 +122,6 @@ public class ApiCourseOfferingDTO {
         if (filteredCourses.isEmpty()) {
             System.out.println("No courses matched the criteria.");
         }
-        return filteredCourses;
     }
 
     private SemesterData getDataForSemesterCode(long semesterCode) {
