@@ -1,8 +1,6 @@
 package com.example.demo.models;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /* ApiCourseDTO class
  * ApiCourseDTO.java
@@ -31,21 +29,29 @@ public class ApiCourseDTO {
 
     public List<ApiCourseDTO> findCourseBasedOnDepartment() {
         List<ApiDepartmentDTO> departments = new DepartmentService().extractDepartmentsFromCSVFile();
+        Set<String> addedCourses = new HashSet<>();
 
         for (ApiDepartmentDTO department : departments) {
             if (getCourseId() == department.getDeptId()) {
                 setCourseName(department.getName());
             }
         }
+
         CSVFileReader file = new CSVFileReader();
         file.extractDataFromCSVFile();
+        List<ApiCourseDTO> listOfCoursesWithoutDuplicates = new ArrayList<>();
         for (int i = 0; i < file.getCourseContainer().size(); i++) {
-            if (file.getCourseContainer().get(i).getSubject().equals(getCourseName())) {
-                listOfCourses.add(new ApiCourseDTO(file.getCourseContainer().get(i).getCatalogNumber().trim(), getCourseName()));
+            ApiCourseDTO course = new ApiCourseDTO(file.getCourseContainer().get(i).getCatalogNumber().trim(), getCourseName());
+            // Use courseName and catalogNumber as a unique key.
+            String uniqueKey = course.getCatalogNumber() + "-" + course.getCourseName();
+
+            if (!addedCourses.contains(uniqueKey)) {
+                listOfCoursesWithoutDuplicates.add(course);
+                addedCourses.add(uniqueKey); 
             }
         }
-        listOfCourses.sort(new CatalogNumberComparator());
-        return listOfCourses;
+        listOfCoursesWithoutDuplicates.sort(new CatalogNumberComparator());
+        return listOfCoursesWithoutDuplicates;
     }
 
     public long getCourseId() {

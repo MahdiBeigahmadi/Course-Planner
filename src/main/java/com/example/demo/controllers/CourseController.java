@@ -62,14 +62,16 @@ public class CourseController {
         offerings.setCourseOfferingId(courseId);
         DepartmentService serviceSize = new DepartmentService();
         long size = serviceSize.extractDepartmentsFromCSVFile().size();
+        offerings.extractInformationBasedOnCourseIdAndDepartmentId();
         if (departmentId > size) {
             throw new InvalidDepartmentException("Invalid department ID: " + departmentId);
         }
-        if (offerings.extractInformationBasedOnCourseIdAndDepartmentId().isEmpty()) {
+        if (offerings.getFilteredCourses().isEmpty()) {
             throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
         }
-        return offerings.extractInformationBasedOnCourseIdAndDepartmentId();
+        return offerings.getFilteredCourses();
     }
+
     @ExceptionHandler(CourseNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleCourseNotFound(CourseNotFoundException ex) {
