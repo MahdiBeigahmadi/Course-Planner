@@ -13,7 +13,6 @@ import java.util.*;
  * Last modified: April. 2024
  */
 public class ApiCourseDTO {
-    private final List<ApiCourseDTO> listOfCourses = new ArrayList<>();
     private long courseId;
     private String catalogNumber;
 
@@ -42,12 +41,11 @@ public class ApiCourseDTO {
         List<ApiCourseDTO> listOfCoursesWithoutDuplicates = new ArrayList<>();
         for (int i = 0; i < file.getCourseContainer().size(); i++) {
             ApiCourseDTO course = new ApiCourseDTO(file.getCourseContainer().get(i).getCatalogNumber().trim(), getCourseName());
-            // Use courseName and catalogNumber as a unique key.
             String uniqueKey = course.getCatalogNumber() + "-" + course.getCourseName();
 
             if (!addedCourses.contains(uniqueKey)) {
                 listOfCoursesWithoutDuplicates.add(course);
-                addedCourses.add(uniqueKey); 
+                addedCourses.add(uniqueKey);
             }
         }
         listOfCoursesWithoutDuplicates.sort(new CatalogNumberComparator());
