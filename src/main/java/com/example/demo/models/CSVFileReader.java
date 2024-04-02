@@ -30,7 +30,7 @@ public class CSVFileReader {
     }
 
     public void extractDataFromCSVFile() {
-        String filePath = "data/course_data_2018.csv";
+        String filePath = "doc/course_data_2018.csv";
         String line = "";
 
         Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); //chatGPT suggested using Pattern Class
