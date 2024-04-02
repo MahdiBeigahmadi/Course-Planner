@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ApiCourseOfferingDTO {
+    private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
     private long departmentId;
     private long courseOfferingId;
     private String location;
@@ -27,7 +28,8 @@ public class ApiCourseOfferingDTO {
     public ApiCourseOfferingDTO() {
     }
 
-    public ApiCourseOfferingDTO(long departmentId, long courseOfferingId, String location, String instructors, String term, long semesterCode, int year) {
+    public ApiCourseOfferingDTO(long departmentId, long courseOfferingId, String location,
+                                String instructors, String term, long semesterCode, int year) {
         this.departmentId = departmentId;
         this.courseOfferingId = courseOfferingId;
         this.location = location;
@@ -36,7 +38,6 @@ public class ApiCourseOfferingDTO {
         this.semesterCode = semesterCode;
         this.year = year;
     }
-
 
     public long getDepartmentId() {
         return departmentId;
@@ -98,9 +99,6 @@ public class ApiCourseOfferingDTO {
         CSVFileReader file = new CSVFileReader();
         file.extractDataFromCSVFile();
         List<Course> tempCourses = new ArrayList<>(file.getCourseContainer());
-        List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
-
-        System.out.println("Starting to filter courses for Department ID: " + getDepartmentId() + " and Course Offering ID: " + getCourseOfferingId());
 
         for (Course temp : tempCourses) {
             if (Objects.equals(temp.getSubject().trim(), checkDepartmentID(getDepartmentId())) &&
