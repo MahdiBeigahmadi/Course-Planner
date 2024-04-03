@@ -35,17 +35,15 @@ public class ApiDepartmentDTO {
         CSVFileReader file = new CSVFileReader();
         file.extractDataFromCSVFile();
         List<ApiCourseDTO> listOfCoursesWithoutDuplicates = new ArrayList<>();
-        AtomicLong nextCourseId = new AtomicLong(1);
+        AtomicLong nextCourseId = new AtomicLong(1000);
 
         for (Course currentCourse: file.getCourseContainer()) {
-            if(currentCourse.getSubject().equals(name)){
-                String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
-                if (!addedCourses.contains(uniqueKey)) {
+            String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
 
-                    ApiCourseDTO course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
-                    listOfCoursesWithoutDuplicates.add(course);
-                    addedCourses.add(uniqueKey);
-                }
+            if(currentCourse.getSubject().equals(name) && !addedCourses.contains(uniqueKey)){
+                ApiCourseDTO course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
+                listOfCoursesWithoutDuplicates.add(course);
+                addedCourses.add(uniqueKey);
             }
 
         }
