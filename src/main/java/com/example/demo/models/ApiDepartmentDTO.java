@@ -1,5 +1,8 @@
 package com.example.demo.models;
 
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+
 /* ApiDepartmentDTO class
  * ApiDepartmentDTO.java
  *
@@ -25,5 +28,35 @@ public class ApiDepartmentDTO {
 
     public String getName() {
         return name;
+    }
+
+    public List<ApiCourseDTO> findCourseBasedOnDepartment() {
+        Set<String> addedCourses = new HashSet<>();
+        CSVFileReader file = new CSVFileReader();
+        file.extractDataFromCSVFile();
+        List<ApiCourseDTO> listOfCoursesWithoutDuplicates = new ArrayList<>();
+        AtomicLong nextCourseId = new AtomicLong(1);
+
+        for (Course currentCourse: file.getCourseContainer()) {
+            if(currentCourse.getSubject().equals(name)){
+                String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
+                if (!addedCourses.contains(uniqueKey)) {
+
+                    ApiCourseDTO course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
+                    listOfCoursesWithoutDuplicates.add(course);
+                    addedCourses.add(uniqueKey);
+                }
+            }
+
+        }
+        listOfCoursesWithoutDuplicates.sort(new ApiDepartmentDTO.CatalogNumberComparator());
+        return listOfCoursesWithoutDuplicates;
+    }
+
+    public static class CatalogNumberComparator implements Comparator<ApiCourseDTO> {
+        @Override
+        public int compare(ApiCourseDTO c1, ApiCourseDTO c2) {
+            return c1.getCatalogNumber().compareTo(c2.getCatalogNumber());
+        }
     }
 }

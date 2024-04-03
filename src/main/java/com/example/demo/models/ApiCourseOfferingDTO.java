@@ -14,12 +14,13 @@ package com.example.demo.models;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ApiCourseOfferingDTO {
     public List<ApiCourseOfferingDTO> getFilteredCourses() {
         return filteredCourses;
     }
-
+    private final AtomicLong idIncrementer = new AtomicLong(1);
     private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
     private long departmentId;
     private long courseOfferingId;
@@ -151,6 +152,7 @@ public class ApiCourseOfferingDTO {
         return new SemesterData(term, year);
     }
 
+    // wrong mapping
     private String checkDepartmentID(long departmentId) {
         return switch ((int) departmentId) {
             case 1 -> "ENSC";

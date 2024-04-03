@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class CourseController {
     private final DepartmentService departmentService;
-
+    private List<ApiDepartmentDTO> departments;
     @Autowired
     public CourseController(DepartmentService departmentService) {
         this.departmentService = departmentService;
@@ -43,15 +43,13 @@ public class CourseController {
 
     @GetMapping("/departments")
     public ResponseEntity<List<ApiDepartmentDTO>> getDepartments() {
-        List<ApiDepartmentDTO> departments = departmentService.extractDepartmentsFromCSVFile();
+        departments = departmentService.extractDepartmentsFromCSVFile();
         return ResponseEntity.ok(departments);
     }
 
     @GetMapping("/departments/{id}/courses")
     public List<ApiCourseDTO> getAllCoursesBasedOnSelectedDepartment(@PathVariable("id") long dept) {
-        ApiCourseDTO course = new ApiCourseDTO();
-        course.setCourseId(dept);
-        return course.findCourseBasedOnDepartment();
+        return departments.get((int)dept-1).findCourseBasedOnDepartment();
     }
 
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings")
