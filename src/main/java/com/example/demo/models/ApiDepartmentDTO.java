@@ -41,7 +41,13 @@ public class ApiDepartmentDTO {
             String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
 
             if(currentCourse.getSubject().equals(name) && !addedCourses.contains(uniqueKey)){
-                ApiCourseDTO course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
+                ApiCourseDTO course = null;
+                if(isNumeric(currentCourse.getCatalogNumber())){
+                    course =  new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, Integer.parseInt(currentCourse.getCatalogNumber()));
+                }else{
+                    course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
+
+                }
                 listOfCoursesWithoutDuplicates.add(course);
                 addedCourses.add(uniqueKey);
             }
@@ -56,5 +62,10 @@ public class ApiDepartmentDTO {
         public int compare(ApiCourseDTO c1, ApiCourseDTO c2) {
             return c1.getCatalogNumber().compareTo(c2.getCatalogNumber());
         }
+    }
+
+    // code from https://www.freecodecamp.org/news/java-string-to-int-how-to-convert-a-string-to-an-integer/
+    public boolean isNumeric(String str){
+        return str != null && str.matches("[0-9.]+");
     }
 }

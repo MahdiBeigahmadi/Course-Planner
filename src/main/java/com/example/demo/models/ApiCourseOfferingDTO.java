@@ -100,11 +100,10 @@ public class ApiCourseOfferingDTO {
     public void extractInformationBasedOnCourseIdAndDepartmentId() {
         CSVFileReader file = new CSVFileReader();
         file.extractDataFromCSVFile();
-        List<Course> tempCourses = new ArrayList<>(file.getCourseContainer());
 
-        for (Course temp : tempCourses) {
+        for (Course temp : file.getCourseContainer()) {
             if (Objects.equals(temp.getSubject().trim(), checkDepartmentID(getDepartmentId())) &&
-                    Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
+                Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
                 System.out.println("Match found: " + temp);
                 SemesterData semesterData = getDataForSemesterCode(temp.getSemester());
                 filteredCourses.add(new ApiCourseOfferingDTO(
@@ -116,7 +115,7 @@ public class ApiCourseOfferingDTO {
 
                 ));
             } else {
-                System.out.println("No match for Course: " + temp);
+//                System.out.println("No match for Course: " + temp);
             }
         }
 
