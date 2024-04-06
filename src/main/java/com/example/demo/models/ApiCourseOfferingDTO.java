@@ -17,9 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ApiCourseOfferingDTO {
-    public List<ApiCourseOfferingDTO> getFilteredCourses() {
-        return filteredCourses;
-    }
     private final AtomicLong idIncrementer = new AtomicLong(1);
     private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
     private long departmentId;
@@ -29,7 +26,6 @@ public class ApiCourseOfferingDTO {
     private String term;
     private long semesterCode;
     private int year;
-
     public ApiCourseOfferingDTO() {
     }
 
@@ -39,6 +35,10 @@ public class ApiCourseOfferingDTO {
         this.term = term;
         this.semesterCode = semesterCode;
         this.year = year;
+    }
+
+    public List<ApiCourseOfferingDTO> getFilteredCourses() {
+        return filteredCourses;
     }
 
     public long getDepartmentId() {
@@ -103,7 +103,7 @@ public class ApiCourseOfferingDTO {
 
         for (Course temp : file.getCourseContainer()) {
             if (Objects.equals(temp.getSubject().trim(), checkDepartmentID(getDepartmentId())) &&
-                Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
+                    Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
                 System.out.println("Match found: " + temp);
                 SemesterData semesterData = getDataForSemesterCode(temp.getSemester());
                 filteredCourses.add(new ApiCourseOfferingDTO(
@@ -114,8 +114,6 @@ public class ApiCourseOfferingDTO {
                         temp.getLocation()
 
                 ));
-            } else {
-//                System.out.println("No match for Course: " + temp);
             }
         }
 
@@ -151,23 +149,22 @@ public class ApiCourseOfferingDTO {
         return new SemesterData(term, year);
     }
 
-    // wrong mapping
     private String checkDepartmentID(long departmentId) {
         return switch ((int) departmentId) {
-            case 1 -> "ENSC";
-            case 2 -> "CMPT";
-            case 3 -> "MSE";
-            case 4 -> "MATH";
-            case 5 -> "IAT";
-            case 6 -> "DDP";
-            case 7 -> "TECH";
-            case 8 -> "MACM";
-            case 9 -> "REM";
-            case 10 -> "CMNS";
-            case 11 -> "CHIN";
-            case 12 -> "KIN";
-            case 13 -> "IART";
-            case 14 -> "WKTM";
+            case 1 -> "IAT";
+            case 2 -> "TECH";
+            case 3 -> "MATH";
+            case 4 -> "KIN";
+            case 5 -> "CMPT";
+            case 6 -> "CMNS";
+            case 7 -> "ENSC";
+            case 8 -> "REM";
+            case 9 -> "WKTM";
+            case 10 -> "MACM";
+            case 11 -> "DDP";
+            case 12 -> "IART";
+            case 13 -> "CHIN";
+            case 14 -> "MSE";
             default -> "Failed";
         };
     }

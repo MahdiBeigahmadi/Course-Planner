@@ -24,6 +24,7 @@ import java.util.List;
 public class CourseController {
     private final DepartmentService departmentService;
     private List<ApiDepartmentDTO> departments;
+
     @Autowired
     public CourseController(DepartmentService departmentService) {
         this.departmentService = departmentService;
@@ -49,7 +50,7 @@ public class CourseController {
 
     @GetMapping("/departments/{id}/courses")
     public List<ApiCourseDTO> getAllCoursesBasedOnSelectedDepartment(@PathVariable("id") long dept) {
-        return departments.get((int)dept-1).findCourseBasedOnDepartment();
+        return departments.get((int) dept - 1).findCourseBasedOnDepartment();
     }
 
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings")
@@ -81,5 +82,12 @@ public class CourseController {
     public String handleInvalidDepartment(InvalidDepartmentException ex) {
         return ex.getMessage();
     }
+
+//    @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings/{offeringID}")
+//    public List<ApiOfferingSectionDTO> getDetailsOfOfferingSection(@PathVariable("departmentID") long departmentId,
+//                                                                   @PathVariable("courseID") long courseId,
+//                                                                   @PathVariable("offeringID") long offeringId) {
+//
+//    }
 }
 

@@ -41,11 +41,13 @@ public class ApiDepartmentDTO {
             String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
 
             if(currentCourse.getSubject().equals(name) && !addedCourses.contains(uniqueKey)){
-                ApiCourseDTO course = null;
+                ApiCourseDTO course;
                 if(isNumeric(currentCourse.getCatalogNumber())){
-                    course =  new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, Integer.parseInt(currentCourse.getCatalogNumber()));
+                    course =  new ApiCourseDTO(currentCourse.getCatalogNumber().trim(),
+                            name, Integer.parseInt(currentCourse.getCatalogNumber()));
                 }else{
-                    course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(), name, nextCourseId.getAndIncrement());
+                    course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(),
+                            name, nextCourseId.getAndIncrement());
 
                 }
                 listOfCoursesWithoutDuplicates.add(course);
