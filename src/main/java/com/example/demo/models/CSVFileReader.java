@@ -32,6 +32,7 @@ public class CSVFileReader {
     }
 
     public void extractDataFromCSVFile() {
+        Course.resetNextId();
         String filePath = "docs/course_data_2018.csv";
         String line = "";
 

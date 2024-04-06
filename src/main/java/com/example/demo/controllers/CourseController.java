@@ -83,11 +83,32 @@ public class CourseController {
         return ex.getMessage();
     }
 
-//    @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings/{offeringID}")
-//    public List<ApiOfferingSectionDTO> getDetailsOfOfferingSection(@PathVariable("departmentID") long departmentId,
-//                                                                   @PathVariable("courseID") long courseId,
-//                                                                   @PathVariable("offeringID") long offeringId) {
-//
-//    }
+
+    //example: Brian Fraser, CMPT 213, courseOfferingId: 345 -> /api/departments/5/courses/213/offerings/345
+    // enroll cap: 45, enroll total: 42
+    /*{
+        "id": 345,
+            "semester": 1131,
+            "subject": "CMPT",
+            "catalogNumber": "213",
+            "location": "SURREY",
+            "enrolementCapacity": 45,
+            "enrolmentTotal": 42,
+            "instructors": "Brian Fraser",
+            "componentCode": "LEC"
+    }*/
+
+    @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings/{courseOfferingId}")
+    public List<ApiOfferingSectionDTO> getDetailsOfOfferingSection(@PathVariable("departmentID") long departmentId,
+                                                                   @PathVariable("courseID") long courseId,
+                                                                   @PathVariable("courseOfferingId") long offeringId) {
+
+        ApiOfferingSectionDTO offeringSection = new ApiOfferingSectionDTO();
+        offeringSection.setCourseId(courseId);
+        offeringSection.setDepartmentId(departmentId);
+        offeringSection.setCourseOfferingId(offeringId);
+        offeringSection.getAdditionalDetailsOnOfferings();
+        return offeringSection.getApiOfferingSectionDTO();
+    }
 }
 

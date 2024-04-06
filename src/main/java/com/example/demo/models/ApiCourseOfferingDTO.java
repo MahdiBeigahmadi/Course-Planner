@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ApiCourseOfferingDTO {
-    private final AtomicLong idIncrementer = new AtomicLong(1);
     private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
     private long departmentId;
     private long courseOfferingId;

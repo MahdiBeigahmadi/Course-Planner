@@ -12,6 +12,8 @@ package com.example.demo.models;
  */
 
 public class Course {
+    private static int nextId = 1;
+    private final int id;
     private int semester;
     private String subject;
     private String catalogNumber;
@@ -24,20 +26,26 @@ public class Course {
 
     private String componentCode;
 
-    public Course() {
-    }
-
-    public Course(int semester, String SUBJECT, String catalogNumber,
+    public Course(int semester, String subject, String catalogNumber,
                   String location, int enrolementCapacity, int enrolmentTotal,
                   String instructors, String componentCode) {
+        this.id = nextId++;
         this.semester = semester;
-        this.subject = SUBJECT;
+        this.subject = subject;
         this.catalogNumber = catalogNumber;
         this.location = location;
         this.enrolementCapacity = enrolementCapacity;
         this.enrolmentTotal = enrolmentTotal;
         this.instructors = instructors;
         this.componentCode = componentCode;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public static void resetNextId() {
+        nextId = 1;
     }
 
     public int getSemester() {
@@ -60,10 +68,15 @@ public class Course {
         return catalogNumber;
     }
 
+    public void setCatalogNumber(String catalogNumber) {
+        this.catalogNumber = catalogNumber;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
-                "semester=" + semester +
+                "id=" + id +
+                ", semester=" + semester +
                 ", subject='" + subject + '\'' +
                 ", catalogNumber='" + catalogNumber + '\'' +
                 ", location='" + location + '\'' +
@@ -72,10 +85,6 @@ public class Course {
                 ", instructors='" + instructors + '\'' +
                 ", componentCode='" + componentCode + '\'' +
                 '}';
-    }
-
-    public void setCatalogNumber(String catalogNumber) {
-        this.catalogNumber = catalogNumber;
     }
 
     public String getLocation() {
