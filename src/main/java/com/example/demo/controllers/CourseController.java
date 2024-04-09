@@ -63,7 +63,9 @@ public class CourseController {
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings")
     public List<ApiCourseOfferingDTO> showAllOfferingsBasedOnSelectedDepartments(@PathVariable("departmentID") long departmentId,
                                                                                  @PathVariable("courseID") long courseId) {
-
+        if(departmentId > departments.size()){
+            throw new  InvalidDepartmentException("Invalid department ID: " + departmentId);
+        }
         // create a list of offerings
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
@@ -81,6 +83,9 @@ public class CourseController {
             }
         }
 
+        if(offerings.size() < 1){
+            throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
+        }
         return offerings;
     }
 
