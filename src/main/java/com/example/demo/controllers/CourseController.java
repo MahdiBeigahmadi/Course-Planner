@@ -74,7 +74,7 @@ public class CourseController {
                     Objects.equals(course.getCatalogNumber().trim(), String.valueOf(courseId))) {
                 ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
                 ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
-                newOffering.setCourseOfferingId(courseId);
+                newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId)));
                 newOffering.setSemesterCode(course.getSemester());
                 newOffering.setTerm(semesterData.term);
                 newOffering.setYear(semesterData.year);
