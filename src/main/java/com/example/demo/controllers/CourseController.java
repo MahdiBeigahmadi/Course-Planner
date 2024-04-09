@@ -67,6 +67,7 @@ public class CourseController {
             throw new  InvalidDepartmentException("Invalid department ID: " + departmentId);
         }
         // create a list of offerings
+        // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
             if (Objects.equals(course.getSubject().trim(), checkDepartmentID(departmentId)) &&

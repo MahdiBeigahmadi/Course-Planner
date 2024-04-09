@@ -12,7 +12,7 @@ package com.example.demo.models;
  */
 
 public class Course {
-    private static int nextId = 1;
+    private static int nextId = 1000;
     private final int id;
     private int semester;
     private String subject;
@@ -29,7 +29,12 @@ public class Course {
     public Course(int semester, String subject, String catalogNumber,
                   String location, int enrolementCapacity, int enrolmentTotal,
                   String instructors, String componentCode) {
-        this.id = nextId++;
+
+        if(isNumeric(catalogNumber)){
+            this.id = Integer.parseInt(catalogNumber);
+        }else{
+            this.id = nextId++;
+        }
         this.semester = semester;
         this.subject = subject;
         this.catalogNumber = catalogNumber;
@@ -125,5 +130,10 @@ public class Course {
 
     public void setComponentCode(String componentCode) {
         this.componentCode = componentCode;
+    }
+
+    // code from https://www.freecodecamp.org/news/java-string-to-int-how-to-convert-a-string-to-an-integer/
+    public boolean isNumeric(String str){
+        return str != null && str.matches("[0-9.]+");
     }
 }
