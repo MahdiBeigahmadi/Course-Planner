@@ -24,7 +24,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
-public class CourseController {
+public class CourseController implements ICourseController {
     private final DepartmentService departmentService;
     private List<ApiDepartmentDTO> departments;
     private List<Course> courseContainer;
@@ -70,7 +70,7 @@ public class CourseController {
         // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
-            if (Objects.equals(course.getSubject().trim(), checkDepartmentID(departmentId)) &&
+            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) &&
                     Objects.equals(course.getCatalogNumber().trim(), String.valueOf(courseId))) {
                 ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
                 ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
@@ -84,7 +84,7 @@ public class CourseController {
             }
         }
 
-        if(offerings.size() < 1){
+        if(offerings.isEmpty()){
             throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
         }
         return offerings;
@@ -103,7 +103,7 @@ public class CourseController {
     }
 
 
-    //example: Brian Fraser, CMPT 213, courseOfferingId: 345 -> /api/departments/5/courses/213/offerings/345
+    //example: Brian Fraser, CMPT 213, courseOfferingId: 213 -> /api/departments/5/courses/213/offerings/213
     // enroll cap: 45, enroll total: 42
     /*{
         "id": 345,
@@ -128,26 +128,6 @@ public class CourseController {
         offeringSection.setCourseOfferingId(offeringId);
         offeringSection.getAdditionalDetailsOnOfferings();
         return offeringSection.getApiOfferingSectionDTO();
-    }
-
-    private static String checkDepartmentID(long departmentId) {
-        return switch ((int) departmentId) {
-            case 1 -> "IAT";
-            case 2 -> "TECH";
-            case 3 -> "MATH";
-            case 4 -> "KIN";
-            case 5 -> "CMPT";
-            case 6 -> "CMNS";
-            case 7 -> "ENSC";
-            case 8 -> "REM";
-            case 9 -> "WKTM";
-            case 10 -> "MACM";
-            case 11 -> "DDP";
-            case 12 -> "IART";
-            case 13 -> "CHIN";
-            case 14 -> "MSE";
-            default -> "Failed";
-        };
     }
 }
 

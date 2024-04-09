@@ -98,11 +98,15 @@ public class ApiOfferingSectionDTO {
         List<Course> temp = new ArrayList<>(csvFileReader.getCourseContainer());
 
         for (Course course : temp) {
-            if (getCourseOfferingId() == course.getId()) {
+            boolean isValidSectionId = String.valueOf(getCourseOfferingId()).equals(course.getCatalogNumber()) &&
+                    ICourseController.checkDepartmentID(getDepartmentId()).equals(course.getSubject())
+                    && String.valueOf(getCourseId()).equals(course.getCatalogNumber());
+            if (isValidSectionId) {
                 apiOfferingSectionDTO.add(new ApiOfferingSectionDTO(course.getComponentCode(),
                         course.getEnrolementCapacity(), course.getEnrolmentTotal()));
                 break;
             }
         }
+        System.out.println(apiOfferingSectionDTO);
     }
 }
