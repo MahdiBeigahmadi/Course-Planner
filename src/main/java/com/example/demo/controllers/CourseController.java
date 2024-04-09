@@ -17,13 +17,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 
 @RestController
 @RequestMapping("/api")
 public class CourseController {
     private final DepartmentService departmentService;
     private List<ApiDepartmentDTO> departments;
+    private List<Course> courseContainer;
 
     @Autowired
     public CourseController(DepartmentService departmentService) {
@@ -45,6 +49,9 @@ public class CourseController {
     @GetMapping("/departments")
     public ResponseEntity<List<ApiDepartmentDTO>> getDepartments() {
         departments = departmentService.extractDepartmentsFromCSVFile();
+        CSVFileReader file = new CSVFileReader();
+        file.extractDataFromCSVFile();
+        courseContainer = file.getCourseContainer();
         return ResponseEntity.ok(departments);
     }
 
@@ -56,19 +63,31 @@ public class CourseController {
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings")
     public List<ApiCourseOfferingDTO> showAllOfferingsBasedOnSelectedDepartments(@PathVariable("departmentID") long departmentId,
                                                                                  @PathVariable("courseID") long courseId) {
-        ApiCourseOfferingDTO offerings = new ApiCourseOfferingDTO();
-        offerings.setDepartmentId(departmentId);
-        offerings.setCourseOfferingId(courseId);
-        DepartmentService serviceSize = new DepartmentService();
-        long size = serviceSize.extractDepartmentsFromCSVFile().size();
-        offerings.extractInformationBasedOnCourseIdAndDepartmentId();
-        if (departmentId > size) {
-            throw new InvalidDepartmentException("Invalid department ID: " + departmentId);
+        if(departmentId > departments.size()){
+            throw new  InvalidDepartmentException("Invalid department ID: " + departmentId);
         }
-        if (offerings.getFilteredCourses().isEmpty()) {
+        // create a list of offerings
+        // search for course by courseID
+        List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
+        for (Course course : courseContainer) {
+            if (Objects.equals(course.getSubject().trim(), checkDepartmentID(departmentId)) &&
+                    Objects.equals(course.getCatalogNumber().trim(), String.valueOf(courseId))) {
+                ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
+                ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
+                newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId)));
+                newOffering.setSemesterCode(course.getSemester());
+                newOffering.setTerm(semesterData.term);
+                newOffering.setYear(semesterData.year);
+                newOffering.setInstructors(course.getInstructors());
+                newOffering.setLocation(course.getLocation());
+                offerings.add(newOffering);
+            }
+        }
+
+        if(offerings.size() < 1){
             throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
         }
-        return offerings.getFilteredCourses();
+        return offerings;
     }
 
     @ExceptionHandler(CourseNotFoundException.class)
@@ -109,6 +128,26 @@ public class CourseController {
         offeringSection.setCourseOfferingId(offeringId);
         offeringSection.getAdditionalDetailsOnOfferings();
         return offeringSection.getApiOfferingSectionDTO();
+    }
+
+    private static String checkDepartmentID(long departmentId) {
+        return switch ((int) departmentId) {
+            case 1 -> "IAT";
+            case 2 -> "TECH";
+            case 3 -> "MATH";
+            case 4 -> "KIN";
+            case 5 -> "CMPT";
+            case 6 -> "CMNS";
+            case 7 -> "ENSC";
+            case 8 -> "REM";
+            case 9 -> "WKTM";
+            case 10 -> "MACM";
+            case 11 -> "DDP";
+            case 12 -> "IART";
+            case 13 -> "CHIN";
+            case 14 -> "MSE";
+            default -> "Failed";
+        };
     }
 }
 
