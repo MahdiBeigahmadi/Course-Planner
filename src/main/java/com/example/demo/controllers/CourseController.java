@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @RestController
@@ -69,18 +70,24 @@ public class CourseController implements ICourseController {
         // create a list of offerings
         // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
+        List<Course> courses = new ArrayList<>();
         for (Course course : courseContainer) {
             if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) &&
                     Objects.equals(course.getCatalogNumber().trim(), String.valueOf(courseId))) {
-                ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
-                ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
-                newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId)));
-                newOffering.setSemesterCode(course.getSemester());
-                newOffering.setTerm(semesterData.term);
-                newOffering.setYear(semesterData.year);
-                newOffering.setInstructors(course.getInstructors());
-                newOffering.setLocation(course.getLocation());
-                offerings.add(newOffering);
+                // Don't show duplicate offerrings
+                    if(!offerings.stream().anyMatch(o-> o.getCourseOfferingId() == (Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester()))))){
+                        ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
+                        ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
+                        newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester())));
+                        newOffering.setSemesterCode(course.getSemester());
+                        newOffering.setTerm(semesterData.term);
+                        newOffering.setYear(semesterData.year);
+                        newOffering.setInstructors(course.getInstructors());
+                        newOffering.setLocation(course.getLocation());
+                        offerings.add(newOffering);
+                        courses.add(course);
+                    }
+
             }
         }
 

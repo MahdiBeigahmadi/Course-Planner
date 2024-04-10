@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ApiCourseOfferingDTO {
-//    private final List<ApiCourseOfferingDTO> filteredCourses = new ArrayList<>();
-//    private long departmentId;
     private long courseOfferingId;
     private String location;
     private String instructors;
@@ -84,31 +82,6 @@ public class ApiCourseOfferingDTO {
         this.year = year;
     }
 
-//    public void extractInformationBasedOnCourseIdAndDepartmentId() {
-//        CSVFileReader file = new CSVFileReader();
-//        file.extractDataFromCSVFile();
-//
-//        for (Course temp : file.getCourseContainer()) {
-//            if (Objects.equals(temp.getSubject().trim(), checkDepartmentID(getDepartmentId())) &&
-//                    Objects.equals(temp.getCatalogNumber().trim(), String.valueOf(getCourseOfferingId()))) {
-//                System.out.println("Match found: " + temp);
-//                SemesterData semesterData = getDataForSemesterCode(temp.getSemester());
-//                filteredCourses.add(new ApiCourseOfferingDTO(
-//                        temp.getSemester(),
-//                        semesterData.term,
-//                        semesterData.year,
-//                        temp.getInstructors(),
-//                        temp.getLocation()
-//
-//                ));
-//            }
-//        }
-//
-//        if (filteredCourses.isEmpty()) {
-//            System.out.println("No courses matched the criteria.");
-//        }
-//    }
-
     public SemesterData getDataForSemesterCode(long semesterCode) {
         String code = String.valueOf(semesterCode);
         int X = Character.getNumericValue(code.charAt(0));
@@ -136,25 +109,7 @@ public class ApiCourseOfferingDTO {
         return new SemesterData(term, year);
     }
 
-//    private static String checkDepartmentID(long departmentId) {
-//        return switch ((int) departmentId) {
-//            case 1 -> "IAT";
-//            case 2 -> "TECH";
-//            case 3 -> "MATH";
-//            case 4 -> "KIN";
-//            case 5 -> "CMPT";
-//            case 6 -> "CMNS";
-//            case 7 -> "ENSC";
-//            case 8 -> "REM";
-//            case 9 -> "WKTM";
-//            case 10 -> "MACM";
-//            case 11 -> "DDP";
-//            case 12 -> "IART";
-//            case 13 -> "CHIN";
-//            case 14 -> "MSE";
-//            default -> "Failed";
-//        };
-//    }
+
 
     // Inner class to hold semester data
     public static class SemesterData {

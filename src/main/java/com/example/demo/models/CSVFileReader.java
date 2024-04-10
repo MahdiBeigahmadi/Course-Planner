@@ -60,7 +60,7 @@ public class CSVFileReader {
 
                 try {
                     final Course newCourse = getCourse(courseDetails);
-                    courseContainer.add(newCourse);
+                        courseContainer.add(newCourse);
                 } catch (NumberFormatException e) {
                     System.err.println("Number format exception for line: " + line);
                 } catch (Exception e) {
