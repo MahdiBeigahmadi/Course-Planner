@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Last modified: April. 2024
  */
 public class ApiDepartmentDTO {
+    public static List<ApiOfferingSectionDTO> offering = new ArrayList<>();
     private final long deptId;
     private final String name;
 
@@ -33,19 +34,18 @@ public class ApiDepartmentDTO {
     public List<ApiCourseDTO> findCourseBasedOnDepartment() {
         Set<String> addedCourses = new HashSet<>();
         CSVFileReader file = new CSVFileReader();
-        file.extractDataFromCSVFile();
         List<ApiCourseDTO> listOfCoursesWithoutDuplicates = new ArrayList<>();
         AtomicLong nextCourseId = new AtomicLong(1000);
 
-        for (Course currentCourse: file.getCourseContainer()) {
+        for (Course currentCourse : file.getCourseContainer()) {
             String uniqueKey = currentCourse.getCatalogNumber() + "-" + name;
 
-            if(currentCourse.getSubject().equals(name) && !addedCourses.contains(uniqueKey)){
+            if (currentCourse.getSubject().equals(name) && !addedCourses.contains(uniqueKey)) {
                 ApiCourseDTO course;
-                if(isNumeric(currentCourse.getCatalogNumber())){
-                    course =  new ApiCourseDTO(currentCourse.getCatalogNumber().trim(),
+                if (isNumeric(currentCourse.getCatalogNumber())) {
+                    course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(),
                             name, Integer.parseInt(currentCourse.getCatalogNumber()));
-                }else{
+                } else {
                     course = new ApiCourseDTO(currentCourse.getCatalogNumber().trim(),
                             name, nextCourseId.getAndIncrement());
 
@@ -54,9 +54,21 @@ public class ApiDepartmentDTO {
                 addedCourses.add(uniqueKey);
             }
 
+//            ApiOfferingSectionDTO offeringSection = new ApiOfferingSectionDTO();
+//            boolean checkCondition = IDepartmentId.checkDepartmentID(offeringSection.getDepartmentId()).equals(currentCourse.getSubject())
+//                    && Objects.equals(currentCourse.getCatalogNumber(), offeringSection.getCourseId());
+//            if (checkCondition) {
+//                offering.add(new ApiOfferingSectionDTO(currentCourse.getComponentCode(),
+//                        currentCourse.getEnrolementCapacity(), currentCourse.getEnrolmentTotal()));
+//            }
         }
         listOfCoursesWithoutDuplicates.sort(new ApiDepartmentDTO.CatalogNumberComparator());
         return listOfCoursesWithoutDuplicates;
+    }
+
+    // code from https://www.freecodecamp.org/news/java-string-to-int-how-to-convert-a-string-to-an-integer/
+    public boolean isNumeric(String str) {
+        return str != null && str.matches("[0-9.]+");
     }
 
     public static class CatalogNumberComparator implements Comparator<ApiCourseDTO> {
@@ -64,10 +76,5 @@ public class ApiDepartmentDTO {
         public int compare(ApiCourseDTO c1, ApiCourseDTO c2) {
             return c1.getCatalogNumber().compareTo(c2.getCatalogNumber());
         }
-    }
-
-    // code from https://www.freecodecamp.org/news/java-string-to-int-how-to-convert-a-string-to-an-integer/
-    public boolean isNumeric(String str){
-        return str != null && str.matches("[0-9.]+");
     }
 }

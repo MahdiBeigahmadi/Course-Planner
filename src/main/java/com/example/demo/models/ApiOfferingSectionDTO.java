@@ -18,7 +18,7 @@ public class ApiOfferingSectionDTO {
     public int enrollmentCap;
     public int enrollmentTotal;
     private long courseOfferingId;
-    private long courseId;
+    private String courseId;
     private long departmentId;
 
     public List<ApiOfferingSectionDTO> getApiOfferingSectionDTO() {
@@ -43,11 +43,11 @@ public class ApiOfferingSectionDTO {
         this.courseOfferingId = courseOfferingId;
     }
 
-    public long getCourseId() {
+    public String getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(long courseId) {
+    public void setCourseId(String courseId) {
         this.courseId = courseId;
     }
 
@@ -90,23 +90,5 @@ public class ApiOfferingSectionDTO {
                 ", type='" + type + '\'' +
                 ", enrollmentTotal=" + enrollmentTotal +
                 '}';
-    }
-
-    public void getAdditionalDetailsOnOfferings() {
-        CSVFileReader csvFileReader = new CSVFileReader();
-        csvFileReader.extractDataFromCSVFile();
-        List<Course> temp = new ArrayList<>(csvFileReader.getCourseContainer());
-
-        for (Course course : temp) {
-            boolean isValidSectionId = String.valueOf(getCourseOfferingId()).equals(course.getCatalogNumber()) &&
-                    ICourseController.checkDepartmentID(getDepartmentId()).equals(course.getSubject())
-                    && String.valueOf(getCourseId()).equals(course.getCatalogNumber());
-            if (isValidSectionId) {
-                apiOfferingSectionDTO.add(new ApiOfferingSectionDTO(course.getComponentCode(),
-                        course.getEnrolementCapacity(), course.getEnrolmentTotal()));
-                break;
-            }
-        }
-        System.out.println(apiOfferingSectionDTO);
     }
 }

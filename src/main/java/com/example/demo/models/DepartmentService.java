@@ -24,9 +24,9 @@ public class DepartmentService {
     private final AtomicLong nextDeptId = new AtomicLong(1);
     private final List<ApiDepartmentDTO> departments = new ArrayList<>();
 
+
     public List<ApiDepartmentDTO> extractDepartmentsFromCSVFile() {
         CSVFileReader file = new CSVFileReader();
-        file.extractDataFromCSVFile();
         List<Course> courses = file.getCourseContainer();
 
         Set<String> existingDepartmentNames = departments.stream()
@@ -38,6 +38,7 @@ public class DepartmentService {
             if (!existingDepartmentNames.contains(subjectName)) {
                 departments.add(new ApiDepartmentDTO(nextDeptId.getAndIncrement(), subjectName));
                 existingDepartmentNames.add(subjectName);
+
             }
         }
         return new ArrayList<>(departments);

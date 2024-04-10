@@ -1,7 +1,5 @@
 package com.example.demo.models;
 
-import java.util.*;
-
 /* ApiCourseDTO class
  * ApiCourseDTO.java
  *
