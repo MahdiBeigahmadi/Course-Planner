@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -70,17 +72,20 @@ public class CourseController implements ICourseController {
         // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
-            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) &&
-                    Objects.equals(course.getCatalogNumber().trim(), String.valueOf(courseId))) {
-                ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
-                ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
-                newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId)));
-                newOffering.setSemesterCode(course.getSemester());
-                newOffering.setTerm(semesterData.term);
-                newOffering.setYear(semesterData.year);
-                newOffering.setInstructors(course.getInstructors());
-                newOffering.setLocation(course.getLocation());
-                offerings.add(newOffering);
+            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) && course.getId() == courseId) {
+                // Don't show duplicate offerings
+                    if(!offerings.stream().anyMatch(o-> o.getCourseOfferingId() == (Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester()))))){
+                        ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
+                        ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
+                        newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester())));
+                        newOffering.setSemesterCode(course.getSemester());
+                        newOffering.setTerm(semesterData.term);
+                        newOffering.setYear(semesterData.year);
+                        newOffering.setInstructors(course.getInstructors());
+                        newOffering.setLocation(course.getLocation());
+                        offerings.add(newOffering);
+                    }
+
             }
         }
 
@@ -122,12 +127,43 @@ public class CourseController implements ICourseController {
                                                                    @PathVariable("courseID") long courseId,
                                                                    @PathVariable("courseOfferingId") long offeringId) {
 
-        ApiOfferingSectionDTO offeringSection = new ApiOfferingSectionDTO();
-        offeringSection.setCourseId(courseId);
-        offeringSection.setDepartmentId(departmentId);
-        offeringSection.setCourseOfferingId(offeringId);
-        offeringSection.getAdditionalDetailsOnOfferings();
-        return offeringSection.getApiOfferingSectionDTO();
+        List<ApiOfferingSectionDTO> offerings = new ArrayList<>();
+        List<Course> relevantCourses = courseContainer.stream().filter(c->c.getSubject().equals(ICourseController.checkDepartmentID(departmentId)) && c.getId() == courseId)
+                                        .map(c-> new Course(
+                                                c.getSemester(),
+                                                c.getSubject(),
+                                                c.getCatalogNumber(),
+                                                c.getLocation(),
+                                                c.getEnrolementCapacity(),
+                                                c.getEnrolmentTotal(),
+                                                c.getInstructors(),
+                                                c.getComponentCode()
+                                        ))
+                                        .collect(Collectors.toList());
+        for (Course course : relevantCourses) {
+            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) &&
+                course.getId() == courseId &&
+                Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester())) == offeringId) {
+                boolean added = false;
+                for(ApiOfferingSectionDTO offer: offerings){
+                    if(offer.getType().equals(course.getComponentCode())){
+                        added = true;
+                        int oldTotal = offer.getEnrollmentTotal();
+                        offer.setEnrollmentTotal(oldTotal + course.getEnrolmentTotal());
+                    }
+                }
+                if(!added){
+                    ApiOfferingSectionDTO newOffering = new ApiOfferingSectionDTO(course.getComponentCode(), course.getEnrolementCapacity(), course.getEnrolmentTotal());
+                    offerings.add(newOffering);
+                }
+
+            }
+        }
+        if(offerings.isEmpty()){
+            throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
+        }
+        return offerings;
+
     }
 }
 

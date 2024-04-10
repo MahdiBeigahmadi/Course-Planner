@@ -17,15 +17,7 @@ public class ApiOfferingSectionDTO {
     public String type;
     public int enrollmentCap;
     public int enrollmentTotal;
-    private long courseOfferingId;
-    private long courseId;
-    private long departmentId;
 
-    public List<ApiOfferingSectionDTO> getApiOfferingSectionDTO() {
-        return apiOfferingSectionDTO;
-    }
-
-    private final List<ApiOfferingSectionDTO> apiOfferingSectionDTO = new ArrayList<>();
     public ApiOfferingSectionDTO() {
     }
 
@@ -33,30 +25,6 @@ public class ApiOfferingSectionDTO {
         this.type = type;
         this.enrollmentCap = enrollmentCap;
         this.enrollmentTotal = enrollmentTotal;
-    }
-
-    public long getCourseOfferingId() {
-        return courseOfferingId;
-    }
-
-    public void setCourseOfferingId(long courseOfferingId) {
-        this.courseOfferingId = courseOfferingId;
-    }
-
-    public long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(long courseId) {
-        this.courseId = courseId;
-    }
-
-    public long getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(long departmentId) {
-        this.departmentId = departmentId;
     }
 
     public String getType() {
@@ -92,21 +60,21 @@ public class ApiOfferingSectionDTO {
                 '}';
     }
 
-    public void getAdditionalDetailsOnOfferings() {
-        CSVFileReader csvFileReader = new CSVFileReader();
-        csvFileReader.extractDataFromCSVFile();
-        List<Course> temp = new ArrayList<>(csvFileReader.getCourseContainer());
-
-        for (Course course : temp) {
-            boolean isValidSectionId = String.valueOf(getCourseOfferingId()).equals(course.getCatalogNumber()) &&
-                    ICourseController.checkDepartmentID(getDepartmentId()).equals(course.getSubject())
-                    && String.valueOf(getCourseId()).equals(course.getCatalogNumber());
-            if (isValidSectionId) {
-                apiOfferingSectionDTO.add(new ApiOfferingSectionDTO(course.getComponentCode(),
-                        course.getEnrolementCapacity(), course.getEnrolmentTotal()));
-                break;
-            }
-        }
-        System.out.println(apiOfferingSectionDTO);
-    }
+//    public void getAdditionalDetailsOnOfferings() {
+//        CSVFileReader csvFileReader = new CSVFileReader();
+//        csvFileReader.extractDataFromCSVFile();
+//        List<Course> temp = new ArrayList<>(csvFileReader.getCourseContainer());
+//
+//        for (Course course : temp) {
+//            boolean isValidSectionId = String.valueOf(getCourseOfferingId()).equals(course.getCatalogNumber()) &&
+//                    ICourseController.checkDepartmentID(getDepartmentId()).equals(course.getSubject())
+//                    && String.valueOf(getCourseId()).equals(course.getCatalogNumber());
+//            if (isValidSectionId) {
+//                apiOfferingSectionDTO.add(new ApiOfferingSectionDTO(course.getComponentCode(),
+//                        course.getEnrolementCapacity(), course.getEnrolmentTotal()));
+//                break;
+//            }
+//        }
+//        System.out.println(apiOfferingSectionDTO);
+//    }
 }
