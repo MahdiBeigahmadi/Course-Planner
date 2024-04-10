@@ -11,6 +11,7 @@ package com.example.demo.models;
  * Last modified: April. 2024
  */
 
+import com.example.demo.models.apiDots.ApiDepartmentDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ public class DepartmentService {
 
     public List<ApiDepartmentDTO> extractDepartmentsFromCSVFile() {
         CSVFileReader file = new CSVFileReader();
-        file.extractDataFromCSVFile();
         List<Course> courses = file.getCourseContainer();
 
         Set<String> existingDepartmentNames = departments.stream()

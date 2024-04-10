@@ -11,34 +11,33 @@ package com.example.demo.models;
  * Last modified: April 2024
  */
 
+import com.example.demo.models.apiDots.ApiOfferingDataDTO;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CSVFileReader {
+    private static final String FILE_PATH = "docs/course_data_2018.csv";
     private final List<Course> courseContainer = new ArrayList<>();
-
-    public CSVFileReader() {
-    }
 
     public List<Course> getCourseContainer() {
         return courseContainer;
     }
 
-    public void extractDataFromCSVFile() {
+    public CSVFileReader(){
         Course.resetNextId();
-        String filePath = "docs/course_data_2018.csv";
         String line = "";
 
         Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); //chatGPT suggested using Pattern Class
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             br.readLine();
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
@@ -60,7 +59,7 @@ public class CSVFileReader {
 
                 try {
                     final Course newCourse = getCourse(courseDetails);
-                        courseContainer.add(newCourse);
+                    courseContainer.add(newCourse);
                 } catch (NumberFormatException e) {
                     System.err.println("Number format exception for line: " + line);
                 } catch (Exception e) {
@@ -91,5 +90,30 @@ public class CSVFileReader {
 
         return new Course(semester, subject, catalogNumber,
                 location, enrollmentCapacity, enrollmentTotal, instructor, componentCode);
+    }
+
+
+    public void addToCsvFile(ApiOfferingDataDTO offering) {
+        String csvLine = String.format("%s,%s,%s,%s,%s,%s,%s,%s\n",
+                offering.getSemester(),
+                offering.getSubjectName(),
+                offering.getCatalogNumber(),
+                offering.getLocation(),
+                offering.getEnrollmentCap(),
+                offering.getComponent(),
+                offering.getInstructor(),
+                offering.getEnrollmentTotal());
+        appendToCsv(csvLine);
+    }
+
+    private void appendToCsv(String csvLine) {
+        try (FileWriter fileWriter = new FileWriter(FILE_PATH, true)) {
+            fileWriter.write(csvLine);
+            System.out.println(csvLine);
+            System.out.println("Data added to CSV file successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while adding data to the CSV file.");
+            e.printStackTrace();
+        }
     }
 }

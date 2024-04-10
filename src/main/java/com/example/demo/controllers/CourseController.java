@@ -12,6 +12,11 @@ package com.example.demo.controllers;
  */
 
 import com.example.demo.models.*;
+import com.example.demo.models.apiDots.*;
+import com.example.demo.models.exceptionHandlers.CourseNotFoundException;
+import com.example.demo.models.exceptionHandlers.InvalidDepartmentException;
+import com.example.demo.models.interfaces.IDepartmentIdConverter;
+import com.example.demo.models.watchers.ApiWatcherDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +25,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/api")
-public class CourseController implements ICourseController {
+public class CourseController implements IDepartmentIdConverter {
     private final DepartmentService departmentService;
     private List<ApiDepartmentDTO> departments;
     private List<Course> courseContainer;
@@ -44,7 +48,6 @@ public class CourseController implements ICourseController {
     @GetMapping("/dump-model")
     public List<Course> loadCSVFileOnServer() {
         CSVFileReader data = new CSVFileReader();
-        data.extractDataFromCSVFile();
         return data.getCourseContainer();
     }
 
@@ -52,7 +55,6 @@ public class CourseController implements ICourseController {
     public ResponseEntity<List<ApiDepartmentDTO>> getDepartments() {
         departments = departmentService.extractDepartmentsFromCSVFile();
         CSVFileReader file = new CSVFileReader();
-        file.extractDataFromCSVFile();
         courseContainer = file.getCourseContainer();
         return ResponseEntity.ok(departments);
     }
@@ -65,31 +67,31 @@ public class CourseController implements ICourseController {
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings")
     public List<ApiCourseOfferingDTO> showAllOfferingsBasedOnSelectedDepartments(@PathVariable("departmentID") long departmentId,
                                                                                  @PathVariable("courseID") long courseId) {
-        if(departmentId > departments.size()){
-            throw new  InvalidDepartmentException("Invalid department ID: " + departmentId);
+        if (departmentId > departments.size()) {
+            throw new InvalidDepartmentException("Invalid department ID: " + departmentId);
         }
         // create a list of offerings
         // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
-            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) && course.getId() == courseId) {
+            if (Objects.equals(course.getSubject().trim(), IDepartmentIdConverter.checkDepartmentID(departmentId)) && course.getId() == courseId) {
                 // Don't show duplicate offerings
-                    if(!offerings.stream().anyMatch(o-> o.getCourseOfferingId() == (Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester()))))){
-                        ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
-                        ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
-                        newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester())));
-                        newOffering.setSemesterCode(course.getSemester());
-                        newOffering.setTerm(semesterData.term);
-                        newOffering.setYear(semesterData.year);
-                        newOffering.setInstructors(course.getInstructors());
-                        newOffering.setLocation(course.getLocation());
-                        offerings.add(newOffering);
-                    }
+                if (!offerings.stream().anyMatch(o -> o.getCourseOfferingId() == (Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester())))) {
+                    ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
+                    ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
+                    newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester()));
+                    newOffering.setSemesterCode(course.getSemester());
+                    newOffering.setTerm(semesterData.term);
+                    newOffering.setYear(semesterData.year);
+                    newOffering.setInstructors(course.getInstructors());
+                    newOffering.setLocation(course.getLocation());
+                    offerings.add(newOffering);
+                }
 
             }
         }
 
-        if(offerings.isEmpty()){
+        if (offerings.isEmpty()) {
             throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
         }
         return offerings;
@@ -108,62 +110,92 @@ public class CourseController implements ICourseController {
     }
 
 
-    //example: Brian Fraser, CMPT 213, courseOfferingId: 213 -> /api/departments/5/courses/213/offerings/213
-    // enroll cap: 45, enroll total: 42
-    /*{
-        "id": 345,
-            "semester": 1131,
-            "subject": "CMPT",
-            "catalogNumber": "213",
-            "location": "SURREY",
-            "enrolementCapacity": 45,
-            "enrolmentTotal": 42,
-            "instructors": "Brian Fraser",
-            "componentCode": "LEC"
-    }*/
-
     @GetMapping("/departments/{departmentID}/courses/{courseID}/offerings/{courseOfferingId}")
     public List<ApiOfferingSectionDTO> getDetailsOfOfferingSection(@PathVariable("departmentID") long departmentId,
                                                                    @PathVariable("courseID") long courseId,
                                                                    @PathVariable("courseOfferingId") long offeringId) {
 
         List<ApiOfferingSectionDTO> offerings = new ArrayList<>();
-        List<Course> relevantCourses = courseContainer.stream().filter(c->c.getSubject().equals(ICourseController.checkDepartmentID(departmentId)) && c.getId() == courseId)
-                                        .map(c-> new Course(
-                                                c.getSemester(),
-                                                c.getSubject(),
-                                                c.getCatalogNumber(),
-                                                c.getLocation(),
-                                                c.getEnrolementCapacity(),
-                                                c.getEnrolmentTotal(),
-                                                c.getInstructors(),
-                                                c.getComponentCode()
-                                        ))
-                                        .collect(Collectors.toList());
+        List<Course> relevantCourses = courseContainer.stream().filter(c -> c.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(departmentId)) && c.getId() == courseId)
+                .map(c -> new Course(
+                        c.getSemester(),
+                        c.getSubject(),
+                        c.getCatalogNumber(),
+                        c.getLocation(),
+                        c.getEnrolementCapacity(),
+                        c.getEnrolmentTotal(),
+                        c.getInstructors(),
+                        c.getComponentCode()
+                ))
+                .collect(Collectors.toList());
+        showOfferingDetails(departmentId, courseId, offeringId, relevantCourses, offerings);
+        if (offerings.isEmpty()) {
+            throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
+        }
+        return offerings;
+    }
+
+    private void showOfferingDetails(long departmentId, long courseId, long offeringId,
+                                     List<Course> relevantCourses, List<ApiOfferingSectionDTO> offerings) {
         for (Course course : relevantCourses) {
-            if (Objects.equals(course.getSubject().trim(), ICourseController.checkDepartmentID(departmentId)) &&
-                course.getId() == courseId &&
-                Long.valueOf(String.valueOf(departmentId) + String.valueOf(courseId) + String.valueOf(course.getSemester())) == offeringId) {
+            if (Objects.equals(course.getSubject().trim(),
+                    IDepartmentIdConverter.checkDepartmentID(departmentId)) &&
+                    course.getId() == courseId &&
+                    Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester()) == offeringId) {
                 boolean added = false;
-                for(ApiOfferingSectionDTO offer: offerings){
-                    if(offer.getType().equals(course.getComponentCode())){
+                for (ApiOfferingSectionDTO offer : offerings) {
+                    if (offer.getType().equals(course.getComponentCode())) {
                         added = true;
                         int oldTotal = offer.getEnrollmentTotal();
                         offer.setEnrollmentTotal(oldTotal + course.getEnrolmentTotal());
                     }
                 }
-                if(!added){
-                    ApiOfferingSectionDTO newOffering = new ApiOfferingSectionDTO(course.getComponentCode(), course.getEnrolementCapacity(), course.getEnrolmentTotal());
+                if (!added) {
+                    ApiOfferingSectionDTO newOffering = new ApiOfferingSectionDTO(course.getComponentCode(),
+                            course.getEnrolementCapacity(), course.getEnrolmentTotal());
                     offerings.add(newOffering);
                 }
 
             }
         }
-        if(offerings.isEmpty()){
-            throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
-        }
-        return offerings;
+    }
+    @PostMapping("/addoffering")
+    public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
+        List<String> events = new ArrayList<>();
+        //adds list of events to the ApiWatcher
+        events.add(offeringDataDTO.toString() + " was added at " + System.currentTimeMillis());
+        //gets the data from front and stores in a new line of csv file
+        final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
+        CSVFileReader file = new CSVFileReader();
+        // extracts the data from csv file first
+        addToWatcher(offeringDataDTO, file, aNewOffering, events); // it adds the event to the watcher
+        return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
+    }
 
+    private void addToWatcher(ApiOfferingDataDTO offeringDataDTO, CSVFileReader file,
+                              ApiOfferingDataDTO aNewOffering, List<String> events) {
+        //adds an object to apiWatcherDTO class
+        file.addToCsvFile(aNewOffering);
+        ApiWatcherDTO apiWatcherDTO = new ApiWatcherDTO();
+        apiWatcherDTO.incrementId();
+        apiWatcherDTO.setEvents(events);
+        apiWatcherDTO.setDepartment(new ApiDepartmentDTO(IDepartmentIdConverter.
+                convertDepartmentStringToId(offeringDataDTO.getSubjectName()), offeringDataDTO.getSubjectName()));
+        apiWatcherDTO.setCourse(new ApiCourseDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
+    }
+
+    private ApiOfferingDataDTO getaNewOffering(ApiOfferingDataDTO offeringDataDTO) {
+        //data from front-end
+        ApiOfferingDataDTO aNewOffering = new ApiOfferingDataDTO();
+        aNewOffering.setSemester(offeringDataDTO.getSemester());
+        aNewOffering.setSubjectName(offeringDataDTO.getSubjectName());
+        aNewOffering.setCatalogNumber(offeringDataDTO.getCatalogNumber());
+        aNewOffering.setLocation(offeringDataDTO.getLocation());
+        aNewOffering.setEnrollmentCap(offeringDataDTO.getEnrollmentCap());
+        aNewOffering.setComponent(offeringDataDTO.getComponent());
+        aNewOffering.setInstructor(offeringDataDTO.getInstructor());
+        aNewOffering.setEnrollmentTotal(offeringDataDTO.getEnrollmentTotal());
+        return aNewOffering;
     }
 }
 
