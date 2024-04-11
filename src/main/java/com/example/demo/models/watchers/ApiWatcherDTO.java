@@ -61,4 +61,14 @@ public class ApiWatcherDTO {
     public void setEvents(List<String> events) {
         this.events = events;
     }
+
+    @Override
+    public String toString() {
+        return "ApiWatcherDTO{" +
+                "id=" + id +
+                ", department=" + department +
+                ", course=" + course +
+                ", events=" + events +
+                '}';
+    }
 }

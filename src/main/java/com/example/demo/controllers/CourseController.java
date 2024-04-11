@@ -25,6 +25,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,11 +38,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class CourseController implements IDepartmentIdConverter {
+    private final long unixTimestamp = 1712862293499L;
     private final DepartmentService departmentService;
-    private List<ApiDepartmentDTO> departments;
-    private List<Course> courseContainer;
-    private List<ApiWatcherDTO> watcherDTOS;
     private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
+    LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimestamp), ZoneId.systemDefault());
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    String formattedDateTime = dateTime.format(formatter);
+    private List<ApiDepartmentDTO> departments = new ArrayList<>();
+    private List<Course> courseContainer = new ArrayList<>();
+    private List<ApiWatcherDTO> watcherDTOS = new ArrayList<>();
 
     @Autowired
     public CourseController(DepartmentService departmentService) {
@@ -169,7 +177,7 @@ public class CourseController implements IDepartmentIdConverter {
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
         List<String> events = new ArrayList<>();
         //adds list of events to the ApiWatcher
-        events.add(offeringDataDTO.toString() + " was added at " + System.currentTimeMillis());
+        events.add(offeringDataDTO.toString() + " was added at " + formattedDateTime);
         //gets the data from front and stores in a new line of csv file
         final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
         CSVFileReader file = new CSVFileReader();
@@ -214,8 +222,20 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
+        List<String> events = new ArrayList<>();
+        events.add(newWatch.toString() + " was added at " + formattedDateTime);
         watcherCreateDTOS.add(newWatch);
         System.out.println("watcher" + newWatch + " created successfully");
+
+        ApiWatcherDTO newWatchDTO = new ApiWatcherDTO();
+        newWatchDTO.incrementId();
+        newWatchDTO.setCourse(new ApiCourseDTO(newWatch.getCourseId(),
+                IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
+        newWatchDTO.setDepartment(new ApiDepartmentDTO(Long.parseLong(newWatch.getDeptId()),
+                IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
+        newWatchDTO.setEvents(events);
+        watcherDTOS.add(newWatchDTO);
+        System.out.println("A new watch added to watch list successfully:\n" + newWatchDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
