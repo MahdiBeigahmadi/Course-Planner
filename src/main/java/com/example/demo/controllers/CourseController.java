@@ -38,7 +38,7 @@ public class CourseController implements IDepartmentIdConverter {
     private List<ApiDepartmentDTO> departments;
     private List<Course> courseContainer;
     private List<ApiWatcherDTO> watcherDTOS;
-    private List<ApiWatcherCreateDTO> watcherCreateDTOS;
+    private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
 
     @Autowired
     public CourseController(DepartmentService departmentService) {
@@ -176,6 +176,7 @@ public class CourseController implements IDepartmentIdConverter {
         // extracts the data from csv file first
         watcherCreateDTOS.add(new ApiWatcherCreateDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
         addToWatcher(offeringDataDTO, file, aNewOffering, events); // it adds the event to the watcher
+        System.out.println("A new offering added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
 
@@ -214,6 +215,7 @@ public class CourseController implements IDepartmentIdConverter {
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
         watcherCreateDTOS.add(newWatch);
+        System.out.println("watcher" + newWatch + " created successfully");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -226,7 +228,7 @@ public class CourseController implements IDepartmentIdConverter {
         if (tempWatchers.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
+        System.out.println(tempWatchers);
         return ResponseEntity.ok(tempWatchers);
     }
 
@@ -240,7 +242,7 @@ public class CourseController implements IDepartmentIdConverter {
             watcherDTOS = filteredWatchers;
             return ResponseEntity.ok().build();
         }
-
+        System.out.println("watcher with id " + id + " is deleted");
         return ResponseEntity.notFound().build();
     }
 }
