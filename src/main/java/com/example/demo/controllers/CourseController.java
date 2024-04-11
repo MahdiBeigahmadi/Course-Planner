@@ -38,6 +38,7 @@ public class CourseController implements IDepartmentIdConverter {
     private List<ApiDepartmentDTO> departments;
     private List<Course> courseContainer;
     private List<ApiWatcherDTO> watcherDTOS;
+    private List<ApiWatcherCreateDTO> watcherCreateDTOS;
 
     @Autowired
     public CourseController(DepartmentService departmentService) {
@@ -173,6 +174,7 @@ public class CourseController implements IDepartmentIdConverter {
         final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
         CSVFileReader file = new CSVFileReader();
         // extracts the data from csv file first
+        watcherCreateDTOS.add(new ApiWatcherCreateDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
         addToWatcher(offeringDataDTO, file, aNewOffering, events); // it adds the event to the watcher
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
@@ -211,12 +213,8 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
-
-        ApiWatcherCreateDTO apiWatch = new ApiWatcherCreateDTO();
-        apiWatch.setCourseId(newWatch.getCourseId());
-        apiWatch.setDeptId(apiWatch.getDeptId());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(newWatch);
+        watcherCreateDTOS.add(newWatch);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/watchers/{id}")
