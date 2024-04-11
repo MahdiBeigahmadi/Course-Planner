@@ -8,7 +8,7 @@ package com.example.demo.models;
  *
  * Author(s): Mahdi Beigahmadi, Danieva Paraiso
  * Student ID(s): 301570853,
- * Last modified: April 2024
+ * Last modified: April. 2024
  */
 
 import com.example.demo.models.apiDots.ApiOfferingDataDTO;

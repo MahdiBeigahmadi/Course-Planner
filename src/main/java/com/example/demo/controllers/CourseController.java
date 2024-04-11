@@ -11,11 +11,14 @@ package com.example.demo.controllers;
  * Last modified: April. 2024
  */
 
-import com.example.demo.models.*;
+import com.example.demo.models.CSVFileReader;
+import com.example.demo.models.Course;
+import com.example.demo.models.DepartmentService;
 import com.example.demo.models.apiDots.*;
 import com.example.demo.models.exceptionHandlers.CourseNotFoundException;
 import com.example.demo.models.exceptionHandlers.InvalidDepartmentException;
 import com.example.demo.models.interfaces.IDepartmentIdConverter;
+import com.example.demo.models.watchers.ApiWatcherCreateDTO;
 import com.example.demo.models.watchers.ApiWatcherDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,7 @@ public class CourseController implements IDepartmentIdConverter {
     private final DepartmentService departmentService;
     private List<ApiDepartmentDTO> departments;
     private List<Course> courseContainer;
+    private List<ApiWatcherDTO> watcherDTOS;
 
     @Autowired
     public CourseController(DepartmentService departmentService) {
@@ -159,6 +163,7 @@ public class CourseController implements IDepartmentIdConverter {
             }
         }
     }
+
     @PostMapping("/addoffering")
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
         List<String> events = new ArrayList<>();
@@ -182,6 +187,7 @@ public class CourseController implements IDepartmentIdConverter {
         apiWatcherDTO.setDepartment(new ApiDepartmentDTO(IDepartmentIdConverter.
                 convertDepartmentStringToId(offeringDataDTO.getSubjectName()), offeringDataDTO.getSubjectName()));
         apiWatcherDTO.setCourse(new ApiCourseDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
+        watcherDTOS.add(apiWatcherDTO);
     }
 
     private ApiOfferingDataDTO getaNewOffering(ApiOfferingDataDTO offeringDataDTO) {
@@ -196,6 +202,48 @@ public class CourseController implements IDepartmentIdConverter {
         aNewOffering.setInstructor(offeringDataDTO.getInstructor());
         aNewOffering.setEnrollmentTotal(offeringDataDTO.getEnrollmentTotal());
         return aNewOffering;
+    }
+
+    @GetMapping("/watchers")
+    public List<ApiWatcherDTO> getAllWatchers() {
+        return watcherDTOS;
+    }
+
+    @PostMapping("/watchers")
+    public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
+
+        ApiWatcherCreateDTO apiWatch = new ApiWatcherCreateDTO();
+        apiWatch.setCourseId(newWatch.getCourseId());
+        apiWatch.setDeptId(apiWatch.getDeptId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(newWatch);
+    }
+
+    @GetMapping("/watchers/{id}")
+    public ResponseEntity<List<ApiWatcherDTO>> returnListOfWatchesAssociatedWithId(@PathVariable long id) {
+        List<ApiWatcherDTO> tempWatchers = watcherDTOS.stream()
+                .filter(watcherDTO -> watcherDTO.getId() == id)
+                .collect(Collectors.toList());
+
+        if (tempWatchers.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(tempWatchers);
+    }
+
+    @DeleteMapping("/watchers/{id}")
+    public ResponseEntity<?> deleteWatcher(@PathVariable long id) {
+        List<ApiWatcherDTO> filteredWatchers = watcherDTOS.stream()
+                .filter(watcherDTO -> watcherDTO.getId() != id)
+                .collect(Collectors.toList());
+
+        if (filteredWatchers.size() < watcherDTOS.size()) {
+            watcherDTOS = filteredWatchers;
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
 

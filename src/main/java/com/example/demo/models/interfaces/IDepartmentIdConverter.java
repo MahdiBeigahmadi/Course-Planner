@@ -20,6 +20,7 @@ public interface IDepartmentIdConverter {
             default -> "Failed";
         };
     }
+
     static long convertDepartmentStringToId(String departmentId) {
         return switch (departmentId) {
             case "IAT" -> 1;
