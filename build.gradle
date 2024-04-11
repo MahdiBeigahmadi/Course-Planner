@@ -22,8 +22,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.session:spring-session-core'
     implementation 'com.opencsv:opencsv:5.0'
-    implementation("org.slf4j:slf4j-api:1.7.30") //helps for debugging purposes
-    implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation 'org.apache.commons:commons-csv:1.8'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
