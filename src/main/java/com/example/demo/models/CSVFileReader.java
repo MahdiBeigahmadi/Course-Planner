@@ -100,9 +100,9 @@ public class CSVFileReader {
                 offering.getCatalogNumber(),
                 offering.getLocation(),
                 offering.getEnrollmentCap(),
-                offering.getComponent(),
+                offering.getEnrollmentTotal(),
                 offering.getInstructor(),
-                offering.getEnrollmentTotal());
+                offering.getComponent());
         appendToCsv(csvLine);
     }
 
