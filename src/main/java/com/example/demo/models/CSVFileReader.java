@@ -13,10 +13,9 @@ package com.example.demo.models;
 
 import com.example.demo.models.apiDots.ApiOfferingDataDTO;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +32,10 @@ public class CSVFileReader {
 
     public CSVFileReader(){
         Course.resetNextId();
+        extractDataFromCsvFile();
+    }
+
+    private void extractDataFromCsvFile() {
         String line = "";
 
         Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); //chatGPT suggested using Pattern Class
@@ -113,6 +116,24 @@ public class CSVFileReader {
             System.out.println("Data added to CSV file successfully.");
         } catch (IOException e) {
             System.err.println("An error occurred while adding data to the CSV file.");
+            e.printStackTrace();
+        }
+    }
+    public void deleteFromCsvFile() {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
+
+            if (!lines.isEmpty()) {
+                lines.remove(lines.size() - 1);
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+                    for (String line : lines) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

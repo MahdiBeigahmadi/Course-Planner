@@ -263,6 +263,7 @@ public class CourseController implements IDepartmentIdConverter {
             return ResponseEntity.ok().build();
         }
         System.out.println("watcher with id " + id + " is deleted");
+        new CSVFileReader().deleteFromCsvFile();
         return ResponseEntity.notFound().build();
     }
 }
