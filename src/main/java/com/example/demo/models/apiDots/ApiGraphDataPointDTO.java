@@ -1,4 +1,7 @@
 package com.example.demo.models.apiDots;
+
+import com.example.demo.models.Course;
+
 /* ApiGraphDataPointDTO class
  * ApiGraphDataPointDTO.java
  *
@@ -10,6 +13,35 @@ package com.example.demo.models.apiDots;
  * Last modified: April 2024
  */
 public class ApiGraphDataPointDTO {
-    public long semesterCode;
-    public long totalCoursesTaken;
+    private long semesterCode;
+    private long totalCoursesTaken;
+
+    public ApiGraphDataPointDTO(int semesterCode, long totalCoursesTaken) {
+        this.semesterCode = semesterCode;
+        this.totalCoursesTaken = totalCoursesTaken;
+    }
+
+    public long getSemesterCode() {
+        return semesterCode;
+    }
+
+    public void setSemesterCode(long semesterCode) {
+        this.semesterCode = semesterCode;
+    }
+
+    public long getTotalCoursesTaken() {
+        return totalCoursesTaken;
+    }
+
+    public void setTotalCoursesTaken(long totalCoursesTaken) {
+        this.totalCoursesTaken = totalCoursesTaken;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiGraphDataPointDTO{" +
+                "semesterCode=" + semesterCode +
+                ", totalCoursesTaken=" + totalCoursesTaken +
+                '}';
+    }
 }

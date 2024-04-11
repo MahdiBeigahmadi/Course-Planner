@@ -14,6 +14,7 @@ package com.example.demo.controllers;
 import com.example.demo.models.CSVFileReader;
 import com.example.demo.models.Course;
 import com.example.demo.models.DepartmentService;
+import com.example.demo.models.GraphDataService;
 import com.example.demo.models.apiDots.*;
 import com.example.demo.models.exceptionHandlers.CourseNotFoundException;
 import com.example.demo.models.exceptionHandlers.InvalidDepartmentException;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 public class CourseController implements IDepartmentIdConverter {
     private final long unixTimestamp = 1712862293499L;
     private final DepartmentService departmentService;
+    private final GraphDataService graphDataService;
     private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
     LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimestamp), ZoneId.systemDefault());
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -49,8 +51,9 @@ public class CourseController implements IDepartmentIdConverter {
     private List<ApiWatcherDTO> watcherDTOS = new ArrayList<>();
 
     @Autowired
-    public CourseController(DepartmentService departmentService) {
+    public CourseController(DepartmentService departmentService, GraphDataService graphDataService) {
         this.departmentService = departmentService;
+        this.graphDataService = graphDataService;
     }
 
     @GetMapping("/about")
@@ -266,5 +269,21 @@ public class CourseController implements IDepartmentIdConverter {
         new CSVFileReader().deleteFromCsvFile();
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/stats/students-per-semester")
+    public ResponseEntity<?> getDataForGraph(@RequestParam(required = false, value = "depId") String deptId) {
+        try {
+            long departmentId = 0;
+            if (deptId != null && !deptId.trim().isEmpty()) {
+                departmentId = Long.parseLong(deptId);
+            }
+            List<ApiGraphDataPointDTO> graphData = graphDataService.generateGraphData(departmentId);
+            System.out.println(graphData);
+            return ResponseEntity.ok(graphData);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid department ID: " + deptId);
+        }
+    }
 }
+
 

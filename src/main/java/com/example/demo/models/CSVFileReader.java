@@ -124,7 +124,7 @@ public class CSVFileReader {
             List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
 
             if (!lines.isEmpty()) {
-                lines.remove(lines.size() - 1);
+                lines.removeLast();
 
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
                     for (String line : lines) {
