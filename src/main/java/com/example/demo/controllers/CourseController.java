@@ -21,6 +21,8 @@ import com.example.demo.models.exceptionHandlers.InvalidDepartmentException;
 import com.example.demo.models.interfaces.IDepartmentIdConverter;
 import com.example.demo.models.watchers.ApiWatcherCreateDTO;
 import com.example.demo.models.watchers.ApiWatcherDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -271,13 +273,9 @@ public class CourseController implements IDepartmentIdConverter {
     }
 
     @GetMapping("/stats/students-per-semester")
-    public ResponseEntity<?> getDataForGraph(@RequestParam(required = false, value = "depId") String deptId) {
+    public ResponseEntity<?> getDataForGraph(@RequestParam(required = false, value = "deptId") String deptId) {
         try {
-            long departmentId = 0;
-            if (deptId != null && !deptId.trim().isEmpty()) {
-                departmentId = Long.parseLong(deptId);
-            }
-            List<ApiGraphDataPointDTO> graphData = graphDataService.generateGraphData(departmentId);
+            List<ApiGraphDataPointDTO> graphData = graphDataService.generateGraphData(deptId);
             System.out.println(graphData);
             return ResponseEntity.ok(graphData);
         } catch (NumberFormatException e) {

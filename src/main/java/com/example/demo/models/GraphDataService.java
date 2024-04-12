@@ -10,8 +10,6 @@ package com.example.demo.models;
  * Student ID(s): 301570853,
  * Last modified: April 2024
  */
-import com.example.demo.models.CSVFileReader;
-import com.example.demo.models.Course;
 import com.example.demo.models.apiDots.ApiGraphDataPointDTO;
 import com.example.demo.models.interfaces.IDepartmentIdConverter;
 import org.springframework.stereotype.Service;
@@ -22,17 +20,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class GraphDataService {
-    public List<ApiGraphDataPointDTO> generateGraphData(long departmentId) {
+
+
+    public List<ApiGraphDataPointDTO> generateGraphData(String departmentId) {
         List<Course> courses = new CSVFileReader().getCourseContainer();
 
-        if (courses == null || courses.isEmpty()) {
-            return List.of();
-        }
-
         List<Course> filteredCourses = courses.stream()
-                .filter(course -> course.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(departmentId)) &&
-                        course.getComponentCode().equals("LEC") &&
-                        checkSemester(course.getSemester()))
+                .filter(course -> course.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(Long.parseLong(departmentId))))
+                .filter(course -> "LEC".equals(course.getComponentCode()))
+                .filter(this::checkSemester)
                 .toList();
 
         return filteredCourses.stream()
@@ -43,7 +39,8 @@ public class GraphDataService {
                 .collect(Collectors.toList());
     }
 
-    private boolean checkSemester(int semNumber) {
+    private boolean checkSemester(Course course) {
+        int semNumber = course.getSemester();
         int lastDigit = semNumber % 10;
         return lastDigit == 1 || lastDigit == 4 || lastDigit == 7;
     }
