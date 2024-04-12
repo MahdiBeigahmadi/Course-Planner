@@ -53,5 +53,4 @@ public class ApiCourseDTO {
     public void setCatalogNumber(String catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
-
 }

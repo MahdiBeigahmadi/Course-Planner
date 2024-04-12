@@ -31,9 +31,6 @@ public class ApiWatcherDTO {
     public long getId() {
         return id;
     }
-    public void incrementId() {
-        this.id = this.id + 1;
-    }
     public void setId(long id) {
         this.id = id;
     }

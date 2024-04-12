@@ -104,8 +104,6 @@ public class ApiCourseOfferingDTO {
         return new SemesterData(term, year);
     }
 
-
-
     // Inner class to hold semester data
     public static class SemesterData {
         public String term;

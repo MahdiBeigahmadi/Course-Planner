@@ -21,8 +21,6 @@ import com.example.demo.models.exceptionHandlers.InvalidDepartmentException;
 import com.example.demo.models.interfaces.IDepartmentIdConverter;
 import com.example.demo.models.watchers.ApiWatcherCreateDTO;
 import com.example.demo.models.watchers.ApiWatcherDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -180,9 +178,12 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/addoffering")
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
+        ApiCourseOfferingDTO.SemesterData term = new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
         List<String> events = new ArrayList<>();
         //adds list of events to the ApiWatcher
-        events.add(offeringDataDTO.toString() + " was added at " + formattedDateTime);
+        events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
+                " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
+                offeringDataDTO.getEnrollmentCap() +") to offering " + term.term + " "  + term.year);
         //gets the data from front and stores in a new line of csv file
         final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
         CSVFileReader file = new CSVFileReader();
@@ -198,7 +199,7 @@ public class CourseController implements IDepartmentIdConverter {
         //adds an object to apiWatcherDTO class
         file.addToCsvFile(aNewOffering);
         ApiWatcherDTO apiWatcherDTO = new ApiWatcherDTO();
-        apiWatcherDTO.incrementId();
+        apiWatcherDTO.setId(watcherDTOS.size() + 1);
         apiWatcherDTO.setEvents(events);
         apiWatcherDTO.setDepartment(new ApiDepartmentDTO(IDepartmentIdConverter.
                 convertDepartmentStringToId(offeringDataDTO.getSubjectName()), offeringDataDTO.getSubjectName()));
@@ -228,12 +229,12 @@ public class CourseController implements IDepartmentIdConverter {
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
         List<String> events = new ArrayList<>();
-        events.add(newWatch.toString() + " was added at " + formattedDateTime);
+        events.add(formattedDateTime + ": Added a new watcher " + newWatch.toString());
         watcherCreateDTOS.add(newWatch);
         System.out.println("watcher" + newWatch + " created successfully");
 
         ApiWatcherDTO newWatchDTO = new ApiWatcherDTO();
-        newWatchDTO.incrementId();
+        newWatchDTO.setId(watcherDTOS.size() + 1);
         newWatchDTO.setCourse(new ApiCourseDTO(newWatch.getCourseId(),
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
         newWatchDTO.setDepartment(new ApiDepartmentDTO(Long.parseLong(newWatch.getDeptId()),
@@ -268,7 +269,7 @@ public class CourseController implements IDepartmentIdConverter {
             return ResponseEntity.ok().build();
         }
         System.out.println("watcher with id " + id + " is deleted");
-        new CSVFileReader().deleteFromCsvFile();
+        //new CSVFileReader().deleteFromCsvFile(); this line causes error during the run time
         return ResponseEntity.notFound().build();
     }
 
