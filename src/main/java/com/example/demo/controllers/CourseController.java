@@ -39,11 +39,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class CourseController implements IDepartmentIdConverter {
-    private final long unixTimestamp = 1712862293499L;
     private final DepartmentService departmentService;
     private final GraphDataService graphDataService;
     private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
-    LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimestamp), ZoneId.systemDefault());
+    LocalDateTime dateTime = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedDateTime = dateTime.format(formatter);
     private List<ApiDepartmentDTO> departments = new ArrayList<>();
@@ -229,7 +228,8 @@ public class CourseController implements IDepartmentIdConverter {
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
         List<String> events = new ArrayList<>();
-        events.add(formattedDateTime + ": Added a new watcher " + newWatch.toString());
+        events.add(formattedDateTime + ": Added a new watcher with department ID = "
+                + newWatch.getDeptId() + ", course ID = " + newWatch.getCourseId());
         watcherCreateDTOS.add(newWatch);
         System.out.println("watcher" + newWatch + " created successfully");
 
@@ -269,7 +269,7 @@ public class CourseController implements IDepartmentIdConverter {
             return ResponseEntity.ok().build();
         }
         System.out.println("watcher with id " + id + " is deleted");
-        //new CSVFileReader().deleteFromCsvFile(); this line causes error during the run time
+        new CSVFileReader().deleteFromCsvFile(); //this line causes error during the run time
         return ResponseEntity.notFound().build();
     }
 
