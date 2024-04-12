@@ -14,7 +14,6 @@ public final class ApiWatcherCreateDTO {
     private String deptId;
     private String courseId;
 
-    public ApiWatcherCreateDTO(){}
     public ApiWatcherCreateDTO(String deptId, String courseId) {
         this.deptId = deptId;
         this.courseId = courseId;

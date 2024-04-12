@@ -53,4 +53,13 @@ public class ApiCourseDTO {
     public void setCatalogNumber(String catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
+
+    @Override
+    public String toString() {
+        return "ApiCourseDTO{" +
+                "courseId=" + courseId +
+                ", catalogNumber='" + catalogNumber + '\'' +
+                ", courseName='" + courseName + '\'' +
+                '}';
+    }
 }

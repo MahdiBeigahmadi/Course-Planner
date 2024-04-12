@@ -38,4 +38,12 @@ public class ApiAboutDTO {
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
+
+    @Override
+    public String toString() {
+        return "ApiAboutDTO{" +
+                "appName='" + appName + '\'' +
+                ", authorName='" + authorName + '\'' +
+                '}';
+    }
 }

@@ -21,12 +21,16 @@ public class ApiCourseOfferingDTO {
     public ApiCourseOfferingDTO() {
     }
 
-    public ApiCourseOfferingDTO(long semesterCode, String term, int year, String instructors, String location) {
-        this.location = location;
-        this.instructors = instructors;
-        this.term = term;
-        this.semesterCode = semesterCode;
-        this.year = year;
+    @Override
+    public String toString() {
+        return "ApiCourseOfferingDTO{" +
+                "courseOfferingId=" + courseOfferingId +
+                ", location='" + location + '\'' +
+                ", instructors='" + instructors + '\'' +
+                ", term='" + term + '\'' +
+                ", semesterCode=" + semesterCode +
+                ", year=" + year +
+                '}';
     }
 
     public long getCourseOfferingId() {

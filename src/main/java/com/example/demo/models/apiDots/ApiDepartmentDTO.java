@@ -65,6 +65,14 @@ public class ApiDepartmentDTO {
         return str != null && str.matches("[0-9.]+");
     }
 
+    @Override
+    public String toString() {
+        return "ApiDepartmentDTO{" +
+                "deptId=" + deptId +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
     public static class CatalogNumberComparator implements Comparator<ApiCourseDTO> {
         @Override
         public int compare(ApiCourseDTO c1, ApiCourseDTO c2) {

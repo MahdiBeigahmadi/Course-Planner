@@ -15,9 +15,6 @@ public class ApiOfferingSectionDTO {
     public int enrollmentCap;
     public int enrollmentTotal;
 
-    public ApiOfferingSectionDTO() {
-    }
-
     public ApiOfferingSectionDTO(String type, int enrollmentCap, int enrollmentTotal) {
         this.type = type;
         this.enrollmentCap = enrollmentCap;

@@ -21,18 +21,19 @@ import java.util.stream.Collectors;
 @Service
 public class GraphDataService {
 
-
     public List<ApiGraphDataPointDTO> generateGraphData(String departmentId) {
         List<Course> courses = new CSVFileReader().getCourseContainer();
 
         List<Course> filteredCourses = courses.stream()
-                .filter(course -> course.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(Long.parseLong(departmentId))))
+                .filter(course -> course.getSubject().
+                        equals(IDepartmentIdConverter.checkDepartmentID(Long.parseLong(departmentId))))
                 .filter(course -> "LEC".equals(course.getComponentCode()))
                 .filter(this::checkSemester)
                 .toList();
 
         return filteredCourses.stream()
-                .collect(Collectors.groupingBy(Course::getSemester, Collectors.summingInt(Course::getEnrolmentTotal)))
+                .collect(Collectors.groupingBy(Course::getSemester,
+                        Collectors.summingInt(Course::getEnrolmentTotal)))
                 .entrySet().stream()
                 .map(entry -> new ApiGraphDataPointDTO(entry.getKey(), entry.getValue()))
                 .sorted(Comparator.comparingLong(ApiGraphDataPointDTO::getSemesterCode))

@@ -21,13 +21,6 @@ public class ApiWatcherDTO {
     private List<String> events;
 
     public ApiWatcherDTO(){}
-    public ApiWatcherDTO(long id, ApiDepartmentDTO department, ApiCourseDTO course, List<String> events) {
-        this.id = id;
-        this.department = department;
-        this.course = course;
-        this.events = events;
-    }
-
     public long getId() {
         return id;
     }
