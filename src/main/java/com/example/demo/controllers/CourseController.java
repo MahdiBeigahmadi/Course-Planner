@@ -26,9 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +38,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class CourseController implements IDepartmentIdConverter {
     private final DepartmentService departmentService;
+    private final List<String> events = new ArrayList<>();
     private final GraphDataService graphDataService;
     private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
     LocalDateTime dateTime = LocalDateTime.now();
@@ -89,9 +88,11 @@ public class CourseController implements IDepartmentIdConverter {
         // search for course by courseID
         List<ApiCourseOfferingDTO> offerings = new ArrayList<>();
         for (Course course : courseContainer) {
-            if (Objects.equals(course.getSubject().trim(), IDepartmentIdConverter.checkDepartmentID(departmentId)) && course.getId() == courseId) {
+            if (Objects.equals(course.getSubject().trim(),
+                    IDepartmentIdConverter.checkDepartmentID(departmentId)) && course.getId() == courseId) {
                 // Don't show duplicate offerings
-                if (!offerings.stream().anyMatch(o -> o.getCourseOfferingId() == (Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester())))) {
+                if (!offerings.stream().anyMatch(o -> o.getCourseOfferingId() ==
+                        (Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester())))) {
                     ApiCourseOfferingDTO newOffering = new ApiCourseOfferingDTO();
                     ApiCourseOfferingDTO.SemesterData semesterData = newOffering.getDataForSemesterCode(course.getSemester());
                     newOffering.setCourseOfferingId(Long.valueOf(String.valueOf(departmentId) + courseId + course.getSemester()));
@@ -107,7 +108,8 @@ public class CourseController implements IDepartmentIdConverter {
         }
 
         if (offerings.isEmpty()) {
-            throw new CourseNotFoundException("No courses found for department ID: " + departmentId + " and course ID: " + courseId);
+            throw new CourseNotFoundException("No courses found for department ID: "
+                    + departmentId + " and course ID: " + courseId);
         }
         return offerings;
     }
@@ -131,7 +133,8 @@ public class CourseController implements IDepartmentIdConverter {
                                                                    @PathVariable("courseOfferingId") long offeringId) {
 
         List<ApiOfferingSectionDTO> offerings = new ArrayList<>();
-        List<Course> relevantCourses = courseContainer.stream().filter(c -> c.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(departmentId)) && c.getId() == courseId)
+        List<Course> relevantCourses = courseContainer.stream().filter(c ->
+                        c.getSubject().equals(IDepartmentIdConverter.checkDepartmentID(departmentId)) && c.getId() == courseId)
                 .map(c -> new Course(
                         c.getSemester(),
                         c.getSubject(),
@@ -177,12 +180,12 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/addoffering")
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
-        ApiCourseOfferingDTO.SemesterData term = new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
-        List<String> events = new ArrayList<>();
+        ApiCourseOfferingDTO.SemesterData term =
+                new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
         //adds list of events to the ApiWatcher
         events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
                 " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
-                offeringDataDTO.getEnrollmentCap() +") to offering " + term.term + " "  + term.year);
+                offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
         //gets the data from front and stores in a new line of csv file
         final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
         CSVFileReader file = new CSVFileReader();
@@ -207,7 +210,6 @@ public class CourseController implements IDepartmentIdConverter {
     }
 
     private ApiOfferingDataDTO getaNewOffering(ApiOfferingDataDTO offeringDataDTO) {
-        //data from front-end
         ApiOfferingDataDTO aNewOffering = new ApiOfferingDataDTO();
         aNewOffering.setSemester(offeringDataDTO.getSemester());
         aNewOffering.setSubjectName(offeringDataDTO.getSubjectName());
@@ -227,7 +229,6 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
-        List<String> events = new ArrayList<>();
         events.add(formattedDateTime + ": Added a new watcher with department ID = "
                 + newWatch.getDeptId() + ", course ID = " + newWatch.getCourseId());
         watcherCreateDTOS.add(newWatch);
@@ -263,13 +264,25 @@ public class CourseController implements IDepartmentIdConverter {
         List<ApiWatcherDTO> filteredWatchers = watcherDTOS.stream()
                 .filter(watcherDTO -> watcherDTO.getId() != id)
                 .collect(Collectors.toList());
-
         if (filteredWatchers.size() < watcherDTOS.size()) {
             watcherDTOS = filteredWatchers;
             return ResponseEntity.ok().build();
         }
-        System.out.println("watcher with id " + id + " is deleted");
-        new CSVFileReader().deleteFromCsvFile(); //this line causes error during the run time
+        System.out.println("watcher with id = " + id + " is deleted");
+        new CSVFileReader().deleteFromCsvFile();
+        ApiWatcherDTO deletedWatcher = new ApiWatcherDTO();
+        deletedWatcher.setId(watcherDTOS.size() + 1);
+        deletedWatcher.setCourse(
+                watcherDTOS.getLast().getCourse()
+        );
+        deletedWatcher.setDepartment(
+                watcherDTOS.getLast().getDepartment()
+        );
+        deletedWatcher.setEvents(
+                events
+        );
+        watcherDTOS.add(deletedWatcher);
+        events.add("watcher with id = " + id + " deleted successfully");
         return ResponseEntity.notFound().build();
     }
 

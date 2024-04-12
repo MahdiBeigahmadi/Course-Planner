@@ -15,24 +15,28 @@ import com.example.demo.models.apiDots.ApiOfferingDataDTO;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CSVFileReader {
     private static final String FILE_PATH = "docs/course_data_2018.csv";
     private final List<Course> courseContainer = new ArrayList<>();
 
-    public List<Course> getCourseContainer() {
-        return courseContainer;
-    }
-
-    public CSVFileReader(){
+    public CSVFileReader() {
         Course.resetNextId();
         extractDataFromCsvFile();
+    }
+
+    public List<Course> getCourseContainer() {
+        return courseContainer;
     }
 
     private void extractDataFromCsvFile() {
@@ -119,21 +123,21 @@ public class CSVFileReader {
             e.printStackTrace();
         }
     }
+
     public void deleteFromCsvFile() {
         try {
-            List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
+            List<String> lines = Files.readAllLines(Path.of(FILE_PATH));
+            System.out.println("Before removal, file has " + lines.size() + " lines.");
 
             if (!lines.isEmpty()) {
                 lines.removeLast();
-
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-                    for (String line : lines) {
-                        writer.write(line);
-                        writer.newLine();
-                    }
-                }
+                Files.write(Path.of(FILE_PATH), lines);
+                System.out.println("Successfully removed the last line. File now has " + lines.size() + " lines.");
+            } else {
+                System.out.println("File was empty, nothing to remove.");
             }
         } catch (IOException e) {
+            System.err.println("Failed to delete the last line from the CSV file due to an IOException.");
             e.printStackTrace();
         }
     }
