@@ -23,8 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class DepartmentService {
     private final AtomicLong nextDeptId = new AtomicLong(1);
-    private final List<ApiDepartmentDTO> departments = new ArrayList<>();
 
+    public List<ApiDepartmentDTO> getDepartments() {
+        return departments;
+    }
+
+    private final List<ApiDepartmentDTO> departments = new ArrayList<>();
+    public DepartmentService(){}
     public List<ApiDepartmentDTO> extractDepartmentsFromCSVFile() {
         CSVFileReader file = new CSVFileReader();
         List<Course> courses = file.getCourseContainer();

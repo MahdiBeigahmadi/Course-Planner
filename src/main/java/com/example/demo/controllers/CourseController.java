@@ -182,23 +182,19 @@ public class CourseController implements IDepartmentIdConverter {
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
         ApiCourseOfferingDTO.SemesterData term =
                 new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
-        //adds list of events to the ApiWatcher
         events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
                 " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
                 offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
-        //gets the data from front and stores in a new line of csv file
         final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
         CSVFileReader file = new CSVFileReader();
-        // extracts the data from csv file first
         watcherCreateDTOS.add(new ApiWatcherCreateDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
-        addToWatcher(offeringDataDTO, file, aNewOffering, events); // it adds the event to the watcher
+        addToWatcher(offeringDataDTO, file, aNewOffering, events);
         System.out.println("A new offering added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
 
     private void addToWatcher(ApiOfferingDataDTO offeringDataDTO, CSVFileReader file,
                               ApiOfferingDataDTO aNewOffering, List<String> events) {
-        //adds an object to apiWatcherDTO class
         file.addToCsvFile(aNewOffering);
         ApiWatcherDTO apiWatcherDTO = new ApiWatcherDTO();
         apiWatcherDTO.setId(watcherDTOS.size() + 1);
@@ -229,21 +225,40 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/watchers")
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
+        final ResponseEntity<String> BAD_REQUEST = getStringResponseEntity(newWatch);
+        if (BAD_REQUEST != null) return BAD_REQUEST;
         events.add(formattedDateTime + ": Added a new watcher with department ID = "
                 + newWatch.getDeptId() + ", course ID = " + newWatch.getCourseId());
         watcherCreateDTOS.add(newWatch);
         System.out.println("watcher" + newWatch + " created successfully");
 
+        final ApiWatcherDTO newWatchDTO = getApiWatcherDTO(newWatch);
+        watcherDTOS.add(newWatchDTO);
+        System.out.println("A new watch added to watch list successfully:\n" + newWatchDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private ApiWatcherDTO getApiWatcherDTO(ApiWatcherCreateDTO newWatch) {
         ApiWatcherDTO newWatchDTO = new ApiWatcherDTO();
         newWatchDTO.setId(watcherDTOS.size() + 1);
-        newWatchDTO.setCourse(new ApiCourseDTO(newWatch.getCourseId(),
+        newWatchDTO.setCourse(new ApiCourseDTO(newWatch.getCourseId().trim(),
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
         newWatchDTO.setDepartment(new ApiDepartmentDTO(Long.parseLong(newWatch.getDeptId()),
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
         newWatchDTO.setEvents(events);
-        watcherDTOS.add(newWatchDTO);
-        System.out.println("A new watch added to watch list successfully:\n" + newWatchDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return newWatchDTO;
+    }
+
+    private ResponseEntity<String> getStringResponseEntity(ApiWatcherCreateDTO newWatch) {
+        DepartmentService service = new DepartmentService();
+        service.extractDepartmentsFromCSVFile();
+        long departmentSize = service.getDepartments().size();
+        boolean failed = departmentSize < Long.parseLong(newWatch.getDeptId()) || newWatch.getCourseId().length() > 3;
+        if (failed) {
+            System.out.println("invalid department id or course id");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid department id or course id");
+        }
+        return null;
     }
 
     @GetMapping("/watchers/{id}")
