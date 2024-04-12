@@ -180,6 +180,9 @@ public class CourseController implements IDepartmentIdConverter {
 
     @PostMapping("/addoffering")
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
+        final ResponseEntity<String> BAD_REQUEST = handleInvalidSemesterCode(offeringDataDTO);
+        if (BAD_REQUEST != null) return BAD_REQUEST;
+
         ApiCourseOfferingDTO.SemesterData term =
                 new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
         events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
@@ -192,6 +195,18 @@ public class CourseController implements IDepartmentIdConverter {
         System.out.println("A new offering added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
+
+    private ResponseEntity<String> handleInvalidSemesterCode(ApiOfferingDataDTO offeringDataDTO) {
+        String semester = offeringDataDTO.getSemester();
+        char semesterCode = semester.charAt(3);
+        boolean isItOk = semesterCode == '1' || semesterCode == '4' || semesterCode == '7';
+        if (!isItOk) {
+            System.out.println("Invalid semester code: " + semesterCode);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid semester code");
+        }
+        return null;
+    }
+
 
     private void addToWatcher(ApiOfferingDataDTO offeringDataDTO, CSVFileReader file,
                               ApiOfferingDataDTO aNewOffering, List<String> events) {
