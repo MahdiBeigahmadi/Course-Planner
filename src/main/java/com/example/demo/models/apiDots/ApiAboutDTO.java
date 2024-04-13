@@ -20,9 +20,6 @@ public class ApiAboutDTO {
         this.authorName = authorName;
     }
 
-    public ApiAboutDTO() {
-    }
-
     public String getAppName() {
         return appName;
     }

@@ -4,7 +4,7 @@ package com.example.demo.models.exceptionHandlers;
  * CourseNotFoundException.java
  *
  * Class Description: It handles exceptions when a course is not found
- * Class Invariant: Must be empty course list.
+ * Class Invariant: Must be an empty course list, or course is not presented in the list.
  *
  * Author(s): Mahdi Beigahmadi, Danieva Paraiso
  * Student ID(s): 301570853,

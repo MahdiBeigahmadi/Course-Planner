@@ -16,9 +16,6 @@ public class ApiCourseDTO {
 
     private String courseName;
 
-    public ApiCourseDTO() {
-    }
-
     public ApiCourseDTO(String catalogNumber, String courseName) {
         this.catalogNumber = catalogNumber;
         this.courseName = courseName;
