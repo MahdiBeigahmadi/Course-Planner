@@ -26,9 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class CourseController implements IDepartmentIdConverter {
     private final List<String> events = new ArrayList<>();
     private final GraphDataService graphDataService;
     private final List<ApiWatcherCreateDTO> watcherCreateDTOS = new ArrayList<>();
+    private HashMap<Long, ArrayList<String>> eventsMap = new HashMap<>();
     LocalDateTime dateTime = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedDateTime = dateTime.format(formatter);
@@ -186,9 +189,21 @@ public class CourseController implements IDepartmentIdConverter {
 
         ApiCourseOfferingDTO.SemesterData term =
                 new ApiCourseOfferingDTO().getDataForSemesterCode(Long.parseLong(offeringDataDTO.getSemester()));
-        events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
-                " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
-                offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
+        // add event to every key
+        for(long i = 1; i <= watcherDTOS.size(); i++){
+            if(eventsMap.get(i) == null){
+                ArrayList<String> list = new ArrayList<>();
+                list.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
+                        " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
+                        offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
+                eventsMap.put(i, list);
+            }else{
+                eventsMap.get(i).add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
+                        " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
+                        offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
+            }
+
+        }
         System.out.println("A new offering added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
@@ -227,7 +242,10 @@ public class CourseController implements IDepartmentIdConverter {
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
         newWatchDTO.setDepartment(new ApiDepartmentDTO(Long.parseLong(newWatch.getDeptId()),
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
-        newWatchDTO.setEvents(events);
+        // create a new list of events
+        ArrayList<String> list = new ArrayList<String>();
+        eventsMap.put(newWatchDTO.getId(), list );
+        newWatchDTO.setEvents(eventsMap.get(newWatchDTO.getId()));
         return newWatchDTO;
     }
 
