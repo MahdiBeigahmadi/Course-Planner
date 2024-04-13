@@ -189,10 +189,6 @@ public class CourseController implements IDepartmentIdConverter {
         events.add(formattedDateTime + " added section " + offeringDataDTO.getComponent() +
                 " with enrollment (" + offeringDataDTO.getEnrollmentTotal() + "/" +
                 offeringDataDTO.getEnrollmentCap() + ") to offering " + term.term + " " + term.year);
-        final ApiOfferingDataDTO aNewOffering = getaNewOffering(offeringDataDTO);
-        CSVFileReader file = new CSVFileReader();
-        watcherCreateDTOS.add(new ApiWatcherCreateDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
-        addToWatcher(offeringDataDTO, file, aNewOffering, events);
         System.out.println("A new offering added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(offeringDataDTO);
     }
@@ -208,32 +204,6 @@ public class CourseController implements IDepartmentIdConverter {
         return null;
     }
 
-
-    private void addToWatcher(ApiOfferingDataDTO offeringDataDTO, CSVFileReader file,
-                              ApiOfferingDataDTO aNewOffering, List<String> events) {
-        file.addToCsvFile(aNewOffering);
-        ApiWatcherDTO apiWatcherDTO = new ApiWatcherDTO();
-        apiWatcherDTO.setId(watcherDTOS.size() + 1);
-        apiWatcherDTO.setEvents(events);
-        apiWatcherDTO.setDepartment(new ApiDepartmentDTO(IDepartmentIdConverter.
-                convertDepartmentStringToId(offeringDataDTO.getSubjectName()), offeringDataDTO.getSubjectName()));
-        apiWatcherDTO.setCourse(new ApiCourseDTO(offeringDataDTO.getCatalogNumber(), offeringDataDTO.getSubjectName()));
-        watcherDTOS.add(apiWatcherDTO);
-    }
-
-    private ApiOfferingDataDTO getaNewOffering(ApiOfferingDataDTO offeringDataDTO) {
-        ApiOfferingDataDTO aNewOffering = new ApiOfferingDataDTO();
-        aNewOffering.setSemester(offeringDataDTO.getSemester());
-        aNewOffering.setSubjectName(offeringDataDTO.getSubjectName());
-        aNewOffering.setCatalogNumber(offeringDataDTO.getCatalogNumber());
-        aNewOffering.setLocation(offeringDataDTO.getLocation());
-        aNewOffering.setEnrollmentCap(offeringDataDTO.getEnrollmentCap());
-        aNewOffering.setComponent(offeringDataDTO.getComponent());
-        aNewOffering.setInstructor(offeringDataDTO.getInstructor());
-        aNewOffering.setEnrollmentTotal(offeringDataDTO.getEnrollmentTotal());
-        return aNewOffering;
-    }
-
     @GetMapping("/watchers")
     public List<ApiWatcherDTO> getAllWatchers() {
         return watcherDTOS;
@@ -244,11 +214,6 @@ public class CourseController implements IDepartmentIdConverter {
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
         final ResponseEntity<String> BAD_REQUEST = getStringResponseEntity(newWatch);
         if (BAD_REQUEST != null) return BAD_REQUEST;
-        events.add(formattedDateTime + ": Added a new watcher with department ID = "
-                + newWatch.getDeptId() + ", course ID = " + newWatch.getCourseId());
-        watcherCreateDTOS.add(newWatch);
-        System.out.println("watcher" + newWatch + " created successfully");
-
         final ApiWatcherDTO newWatchDTO = getApiWatcherDTO(newWatch);
         watcherDTOS.add(newWatchDTO);
         System.out.println("A new watch added to watch list successfully:\n" + newWatchDTO);
