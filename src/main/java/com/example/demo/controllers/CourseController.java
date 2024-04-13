@@ -179,6 +179,7 @@ public class CourseController implements IDepartmentIdConverter {
     }
 
     @PostMapping("/addoffering")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> addNewOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO) {
         final ResponseEntity<String> BAD_REQUEST = handleInvalidSemesterCode(offeringDataDTO);
         if (BAD_REQUEST != null) return BAD_REQUEST;
@@ -239,6 +240,7 @@ public class CourseController implements IDepartmentIdConverter {
     }
 
     @PostMapping("/watchers")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createNewWatcher(@RequestBody ApiWatcherCreateDTO newWatch) {
         final ResponseEntity<String> BAD_REQUEST = getStringResponseEntity(newWatch);
         if (BAD_REQUEST != null) return BAD_REQUEST;
@@ -290,6 +292,7 @@ public class CourseController implements IDepartmentIdConverter {
     }
 
     @DeleteMapping("/watchers/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> deleteWatcher(@PathVariable long id) {
         List<ApiWatcherDTO> filteredWatchers = watcherDTOS.stream()
                 .filter(watcherDTO -> watcherDTO.getId() != id)
