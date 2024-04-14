@@ -41,9 +41,9 @@ public class CourseController implements IDepartmentIdConverter {
     private final DepartmentService departmentService;
     private final GraphDataService graphDataService;
     private final HashMap<Long, ArrayList<String>> eventsMap = new HashMap<>();
-    LocalDateTime dateTime = LocalDateTime.now();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    String formattedDateTime = dateTime.format(formatter);
+    private final LocalDateTime dateTime = LocalDateTime.now();
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final String formattedDateTime = dateTime.format(formatter);
     private List<ApiDepartmentDTO> departments = new ArrayList<>();
     private List<Course> courseContainer = new ArrayList<>();
     private List<ApiWatcherDTO> watcherDTOS = new ArrayList<>();
