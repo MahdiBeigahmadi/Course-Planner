@@ -115,8 +115,7 @@ public class CSVFileReader {
 
     private void appendToCsv(String csvLine) {
         try (FileWriter fileWriter = new FileWriter(FILE_PATH, true)) {
-            fileWriter.write(csvLine);
-            System.out.println(csvLine);
+            fileWriter.append("\n").append(csvLine);
             System.out.println("Data added to CSV file successfully.");
         } catch (IOException e) {
             System.err.println("An error occurred while adding data to the CSV file.");
