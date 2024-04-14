@@ -243,7 +243,7 @@ public class CourseController implements IDepartmentIdConverter {
         newWatchDTO.setDepartment(new ApiDepartmentDTO(Long.parseLong(newWatch.getDeptId()),
                 IDepartmentIdConverter.checkDepartmentID(Long.parseLong(newWatch.getDeptId()))));
         // create a new list of events
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         eventsMap.put(newWatchDTO.getId(), list );
         newWatchDTO.setEvents(eventsMap.get(newWatchDTO.getId()));
         return newWatchDTO;
@@ -280,25 +280,11 @@ public class CourseController implements IDepartmentIdConverter {
         List<ApiWatcherDTO> filteredWatchers = watcherDTOS.stream()
                 .filter(watcherDTO -> watcherDTO.getId() != id)
                 .collect(Collectors.toList());
-        if (filteredWatchers.size() < watcherDTOS.size()) {
-            watcherDTOS = filteredWatchers;
-            return ResponseEntity.ok().build();
-        }
-        System.out.println("watcher with id = " + id + " is deleted");
-        new CSVFileReader().deleteFromCsvFile();
-        ApiWatcherDTO deletedWatcher = new ApiWatcherDTO();
-        deletedWatcher.setId(watcherDTOS.size() + 1);
-        deletedWatcher.setCourse(
-                watcherDTOS.getLast().getCourse()
-        );
-        deletedWatcher.setDepartment(
-                watcherDTOS.getLast().getDepartment()
-        );
-        deletedWatcher.setEvents(
-                events
-        );
-        watcherDTOS.add(deletedWatcher);
-        events.add("watcher with id = " + id + " deleted successfully");
+            System.out.println("watcher with id = " + id + " is deleted");
+            if (filteredWatchers.size() < watcherDTOS.size()) {
+                watcherDTOS = filteredWatchers;
+                return ResponseEntity.ok().build();
+            }
         return ResponseEntity.notFound().build();
     }
 

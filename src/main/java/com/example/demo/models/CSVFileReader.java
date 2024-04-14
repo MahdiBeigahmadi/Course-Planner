@@ -123,22 +123,4 @@ public class CSVFileReader {
             e.printStackTrace();
         }
     }
-
-    public void deleteFromCsvFile() {
-        try {
-            List<String> lines = Files.readAllLines(Path.of(FILE_PATH));
-            System.out.println("Before removal, file has " + lines.size() + " lines.");
-
-            if (!lines.isEmpty()) {
-                lines.removeLast();
-                Files.write(Path.of(FILE_PATH), lines);
-                System.out.println("Successfully removed the last line. File now has " + lines.size() + " lines.");
-            } else {
-                System.out.println("File was empty, nothing to remove.");
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to delete the last line from the CSV file due to an IOException.");
-            e.printStackTrace();
-        }
-    }
 }
