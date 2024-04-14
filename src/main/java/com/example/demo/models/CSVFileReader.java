@@ -42,7 +42,8 @@ public class CSVFileReader {
     private void extractDataFromCsvFile() {
         String line = "";
 
-        Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); //chatGPT suggested using Pattern Class
+        Pattern pattern = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+        //chatGPT suggested using Pattern Class
 
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             br.readLine();
@@ -98,7 +99,6 @@ public class CSVFileReader {
         return new Course(semester, subject, catalogNumber,
                 location, enrollmentCapacity, enrollmentTotal, instructor, componentCode);
     }
-
 
     public void addToCsvFile(ApiOfferingDataDTO offering) {
         String csvLine = String.format("%s,%s,%s,%s,%s,%s,%s,%s\n",

@@ -20,24 +20,4 @@ public interface IDepartmentIdConverter {
             default -> "Failed";
         };
     }
-
-    static long convertDepartmentStringToId(String departmentId) {
-        return switch (departmentId) {
-            case "IAT" -> 1;
-            case "TECH" -> 2;
-            case "MATH" -> 3;
-            case "KIN" -> 4;
-            case "CMPT" -> 5;
-            case "CMNS" -> 6;
-            case "ENSC" -> 7;
-            case "REM" -> 8;
-            case "WKTM" -> 9;
-            case "MACM" -> 10;
-            case "DDP" -> 11;
-            case "IART" -> 12;
-            case "CHIN" -> 13;
-            case "MSE" -> 14;
-            default -> 0;
-        };
-    }
 }
