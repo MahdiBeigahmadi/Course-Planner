@@ -40,10 +40,10 @@ import java.util.stream.Collectors;
 public class CourseController implements IDepartmentIdConverter {
     private final DepartmentService departmentService;
     private final GraphDataService graphDataService;
+    private final HashMap<Long, ArrayList<String>> eventsMap = new HashMap<>();
     LocalDateTime dateTime = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedDateTime = dateTime.format(formatter);
-    private final HashMap<Long, ArrayList<String>> eventsMap = new HashMap<>();
     private List<ApiDepartmentDTO> departments = new ArrayList<>();
     private List<Course> courseContainer = new ArrayList<>();
     private List<ApiWatcherDTO> watcherDTOS = new ArrayList<>();
@@ -62,7 +62,8 @@ public class CourseController implements IDepartmentIdConverter {
     @GetMapping("/dump-model")
     public List<Course> loadCSVFileOnServer() {
         CSVFileReader data = new CSVFileReader();
-        return data.getCourseContainer();
+        courseContainer = data.getCourseContainer();
+        return courseContainer;
     }
 
     @GetMapping("/departments")
@@ -103,10 +104,8 @@ public class CourseController implements IDepartmentIdConverter {
                     newOffering.setLocation(course.getLocation());
                     offerings.add(newOffering);
                 }
-
             }
         }
-
         if (offerings.isEmpty()) {
             throw new CourseNotFoundException("No courses found for department ID: "
                     + departmentId + " and course ID: " + courseId);

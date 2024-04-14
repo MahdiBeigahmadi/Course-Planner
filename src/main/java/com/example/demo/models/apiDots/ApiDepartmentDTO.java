@@ -54,12 +54,10 @@ public class ApiDepartmentDTO {
                 listOfCoursesWithoutDuplicates.add(course);
                 addedCourses.add(uniqueKey);
             }
-
         }
         listOfCoursesWithoutDuplicates.sort(new ApiDepartmentDTO.CatalogNumberComparator());
         return listOfCoursesWithoutDuplicates;
     }
-
     // code from https://www.freecodecamp.org/news/java-string-to-int-how-to-convert-a-string-to-an-integer/
     public boolean isNumeric(String str) {
         return str != null && str.matches("[0-9.]+");
